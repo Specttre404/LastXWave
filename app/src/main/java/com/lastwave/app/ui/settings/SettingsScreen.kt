@@ -817,14 +817,6 @@ fun SettingsScreen(
                             )
                         }
                     }
-                    SystemIntegrationLockscreenCard(
-                        expressiveNotificationEnabled = misc.expressiveNotificationEnabled,
-                        screenOffBatterySaver = misc.screenOffBatterySaver,
-                        metroHubEnabled = misc.metroHubEnabled,
-                        onExpressiveNotificationToggle = viewModel::setExpressiveNotificationEnabled,
-                        onBatterySaverToggle = viewModel::setScreenOffBatterySaver,
-                        onMetroHubToggle = viewModel::setMetroHubEnabled,
-                    )
                 }
             }
 
@@ -1224,6 +1216,16 @@ fun SettingsScreen(
                 }
             }
 
+            item {
+                SystemIntegrationLockscreenCard(
+                    expressiveNotificationEnabled = misc.expressiveNotificationEnabled,
+                    screenOffBatterySaver = misc.screenOffBatterySaver,
+                    metroHubEnabled = misc.metroHubEnabled,
+                    onExpressiveNotificationToggle = viewModel::setExpressiveNotificationEnabled,
+                    onBatterySaverToggle = viewModel::setScreenOffBatterySaver,
+                    onMetroHubToggle = viewModel::setMetroHubEnabled,
+                )
+            }
 
             }
 

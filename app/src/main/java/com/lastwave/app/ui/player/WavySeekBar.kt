@@ -9,6 +9,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
@@ -479,5 +480,141 @@ fun WavySeekbar(
             radius = 7.dp.toPx(),
             center = Offset(activeWidth, centerY),
         )
+    }
+}
+
+enum class SeekbarStyleVariant {
+    ANDROID_17_WAVY_FLUID,
+    VIVI_CAPSULE_STADIUM,
+    ANALOG_MIXING_CONSOLE,
+    METRO_SEGMENTED_DASH,
+    CIDER_MINIMAL_NEEDLE,
+    PRISM_NEON_RIBBON,
+    NUVIA_LIVE_WAVEFORM
+}
+
+@Composable
+fun WavySeekBar(
+    progress: Float,
+    onSeek: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+    style: SeekbarStyleVariant = SeekbarStyleVariant.ANDROID_17_WAVY_FLUID,
+    accentColors: List<Color> = listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary)
+) {
+    var width by remember { mutableFloatStateOf(1f) }
+
+    Canvas(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(36.dp)
+            .pointerInput(Unit) {
+                detectTapGestures { offset ->
+                    onSeek((offset.x / size.width).coerceIn(0f, 1f))
+                }
+            }
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures(
+                    onHorizontalDrag = { change, _ ->
+                        change.consume()
+                        onSeek((change.position.x / size.width).coerceIn(0f, 1f))
+                    }
+                )
+            }
+    ) {
+        width = size.width
+        val h = size.height
+        val centerY = h / 2f
+        val currentX = (width * progress.coerceIn(0f, 1f))
+        val activeBrush = Brush.horizontalGradient(accentColors, 0f, width)
+        val trackBg = Color(0xFF2A2E3D)
+
+        when (style) {
+            SeekbarStyleVariant.ANDROID_17_WAVY_FLUID -> {
+                // Background Track
+                drawLine(trackBg, Offset(0f, centerY), Offset(width, centerY), strokeWidth = 4.dp.toPx(), cap = StrokeCap.Round)
+                // Wavy Animated Sine Path
+                val path = Path()
+                path.moveTo(0f, centerY)
+                var x = 0f
+                val waveLength = 28f
+                val amplitude = 5.dp.toPx()
+                while (x <= currentX) {
+                    val y = centerY + sin(x / waveLength * (2 * Math.PI.toFloat())) * amplitude
+                    path.lineTo(x, y)
+                    x += 2f
+                }
+                drawPath(path, activeBrush, style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round))
+                drawCircle(accentColors.last(), radius = 6.dp.toPx(), center = Offset(currentX, centerY))
+            }
+
+            SeekbarStyleVariant.VIVI_CAPSULE_STADIUM -> {
+                // Broad Stadium Pill Track
+                drawRoundRect(trackBg, Offset(0f, centerY - 6.dp.toPx()), Size(width, 12.dp.toPx()), CornerRadius(6.dp.toPx()))
+                drawRoundRect(activeBrush, Offset(0f, centerY - 6.dp.toPx()), Size(currentX, 12.dp.toPx()), CornerRadius(6.dp.toPx()))
+                drawCircle(Color.White, radius = 8.dp.toPx(), center = Offset(currentX, centerY))
+            }
+
+            SeekbarStyleVariant.ANALOG_MIXING_CONSOLE -> {
+                // Segmented LED VU Meter style
+                val segments = 36
+                val segWidth = width / segments
+                for (i in 0 until segments) {
+                    val segX = i * segWidth
+                    val isLit = segX <= currentX
+                    val color = if (isLit) activeBrush else androidx.compose.ui.graphics.SolidColor(trackBg)
+                    drawRoundRect(
+                        brush = color,
+                        topLeft = Offset(segX + 2f, centerY - 8.dp.toPx()),
+                        size = Size(segWidth - 4f, 16.dp.toPx()),
+                        cornerRadius = CornerRadius(2.dp.toPx())
+                    )
+                }
+            }
+
+            SeekbarStyleVariant.METRO_SEGMENTED_DASH -> {
+                val totalDashes = 24
+                val dashW = width / totalDashes
+                for (i in 0 until totalDashes) {
+                    val start = i * dashW
+                    val lit = start <= currentX
+                    drawLine(
+                        color = if (lit) accentColors.first() else trackBg,
+                        start = Offset(start + 3f, centerY),
+                        end = Offset(start + dashW - 3f, centerY),
+                        strokeWidth = 6.dp.toPx(),
+                        cap = StrokeCap.Square
+                    )
+                }
+            }
+
+            SeekbarStyleVariant.CIDER_MINIMAL_NEEDLE -> {
+                drawLine(trackBg, Offset(0f, centerY), Offset(width, centerY), strokeWidth = 2.dp.toPx())
+                drawLine(activeBrush, Offset(0f, centerY), Offset(currentX, centerY), strokeWidth = 2.dp.toPx())
+                drawLine(Color.White, Offset(currentX, centerY - 10.dp.toPx()), Offset(currentX, centerY + 10.dp.toPx()), strokeWidth = 2.dp.toPx())
+            }
+
+            SeekbarStyleVariant.PRISM_NEON_RIBBON -> {
+                drawLine(trackBg, Offset(0f, centerY), Offset(width, centerY), strokeWidth = 5.dp.toPx(), cap = StrokeCap.Round)
+                drawLine(activeBrush, Offset(0f, centerY), Offset(currentX, centerY), strokeWidth = 5.dp.toPx(), cap = StrokeCap.Round)
+                drawCircle(Color.White, radius = 7.dp.toPx(), center = Offset(currentX, centerY))
+            }
+
+            SeekbarStyleVariant.NUVIA_LIVE_WAVEFORM -> {
+                val bars = 40
+                val barW = width / bars
+                for (i in 0 until bars) {
+                    val barX = i * barW
+                    val isPast = barX <= currentX
+                    val heightFactor = (sin(i * 0.5f) * 0.5f + 0.5f) * 14.dp.toPx() + 4.dp.toPx()
+                    drawLine(
+                        color = if (isPast) accentColors.first() else trackBg,
+                        start = Offset(barX, centerY - heightFactor),
+                        end = Offset(barX, centerY + heightFactor),
+                        strokeWidth = barW * 0.6f,
+                        cap = StrokeCap.Round
+                    )
+                }
+            }
+        }
     }
 }

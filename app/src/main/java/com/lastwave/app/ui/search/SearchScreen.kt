@@ -46,14 +46,17 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.rounded.GraphicEq
+import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Mic
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.speech.RecognizerIntent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Person
@@ -153,6 +156,32 @@ fun SearchScreen(
     val addToPlaylist = com.lastwave.app.ui.player.LocalAddToPlaylist.current
     val focusManager = LocalFocusManager.current
     val liquidGlass = LocalLiquidGlass.current
+
+    val context = LocalContext.current
+
+    // Voice to text intent launcher
+    val voiceLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val spokenText = result.data
+                ?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                ?.firstOrNull()
+            if (!spokenText.isNullOrBlank()) {
+                viewModel.setQuery(spokenText)
+                viewModel.searchNow()
+            }
+        }
+    }
+
+    // Audio record permission launcher for sound recognition
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            viewModel.startAudioRecognition()
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -266,18 +295,44 @@ fun SearchScreen(
                             }
                         },
                     )
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(6.dp))
                     IconButton(
-                        onClick = { showAssistantSheet = true },
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape),
+                        onClick = {
+                            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                                putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak to search on LastXWave...")
+                            }
+                            try {
+                                voiceLauncher.launch(intent)
+                            } catch (_: Exception) {}
+                        },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Mic,
+                            contentDescription = "Voice Search",
+                            tint = Color(0xFF00E5FF)
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            val hasPermission = ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.RECORD_AUDIO
+                            ) == PackageManager.PERMISSION_GRANTED
+
+                            if (hasPermission) {
+                                viewModel.startAudioRecognition()
+                            } else {
+                                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                            }
+                        },
+                        modifier = Modifier.size(36.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.GraphicEq,
-                            contentDescription = "Audio Assistant",
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.size(22.dp),
+                            contentDescription = "Identify Playing Music",
+                            tint = Color(0xFFFF2E93)
                         )
                     }
                 }
@@ -385,63 +440,17 @@ fun SearchScreen(
                         }
 
                         item(key = "explore_section") {
-                            Column(
+                            Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.padding(bottom = 12.dp),
-                                ) {
-                                    Icon(
-                                        Icons.Filled.Explore,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(18.dp),
-                                    )
-                                    Spacer(Modifier.width(8.dp))
-                                    Text(
-                                        "Explore genres & moods",
-                                        style = MaterialTheme.typography.titleSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                }
-                                val pillShape = if (liquidGlass) RoundedCornerShape(50) else ExpressivePillShape
-                                FlowRow(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier.fillMaxWidth(),
-                                ) {
-                                    EXPLORE_GENRES.forEach { genre ->
-                                        AssistChip(
-                                            onClick = {
-                                                focusManager.clearFocus()
-                                                viewModel.executeSearch(genre)
-                                            },
-                                            label = {
-                                                Text(
-                                                    genre,
-                                                    style = MaterialTheme.typography.labelLarge,
-                                                    fontWeight = FontWeight.Bold,
-                                                )
-                                            },
-                                            border = if (liquidGlass) BorderStroke(
-                                                width = 1.dp,
-                                                brush = Brush.linearGradient(
-                                                    colors = listOf(Color(0xFF00F0FF).copy(alpha = 0.6f), Color(0xFFFF2E93).copy(alpha = 0.6f)),
-                                                ),
-                                            ) else null,
-                                            colors = AssistChipDefaults.assistChipColors(
-                                                containerColor = if (liquidGlass) liquidGlassContainerColor(MaterialTheme.colorScheme.surfaceContainerHighest) else MaterialTheme.colorScheme.surfaceContainerHighest,
-                                                labelColor = MaterialTheme.colorScheme.onSurface,
-                                            ),
-                                            shape = pillShape,
-                                            modifier = Modifier.liquidGlassChrome(pillShape, liquidGlass),
-                                        )
+                                GenreMoodSection(
+                                    onGenreSelect = { genre ->
+                                        focusManager.clearFocus()
+                                        viewModel.executeSearch(genre)
                                     }
-                                }
+                                )
                             }
                         }
                     }

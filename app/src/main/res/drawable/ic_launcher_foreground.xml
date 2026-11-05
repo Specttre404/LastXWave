@@ -5,41 +5,22 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Underlaid Ambient Specular Bloom Layer -->
+    <!-- Stripped inner circular contour; pure fluid LastXWave neon signature -->
     <path
-        android:pathData="M 30,54 C 36,54 38,32 46,32 C 54,32 52,76 62,76 C 70,76 72,54 78,54"
-        android:strokeWidth="15"
+        android:pathData="M 31,54 C 33,40 37,32 43,32 C 49,32 50,76 56,76 C 62,76 65,44 71,44 C 75,44 77,58 77,58"
+        android:strokeWidth="11"
         android:strokeLineCap="round"
         android:strokeLineJoin="round">
         <aapt:attr name="android:strokeColor">
             <gradient
-                android:type="linear"
-                android:startX="30"
+                android:startX="31"
                 android:startY="54"
-                android:endX="78"
-                android:endY="54">
-                <item android:offset="0.0" android:color="#50FFFFFF" />
-                <item android:offset="0.5" android:color="#50FFFFFF" />
-                <item android:offset="1.0" android:color="#50FFFFFF" />
-            </gradient>
-        </aapt:attr>
-    </path>
-    <!-- Tri-Color Harmonic Soundwave Vector (7.5dp stroke) -->
-    <path
-        android:pathData="M 30,54 C 36,54 38,32 46,32 C 54,32 52,76 62,76 C 70,76 72,54 78,54"
-        android:strokeWidth="7.5"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round">
-        <aapt:attr name="android:strokeColor">
-            <gradient
-                android:type="linear"
-                android:startX="30"
-                android:startY="54"
-                android:endX="78"
-                android:endY="54">
+                android:endX="77"
+                android:endY="54"
+                android:type="linear">
                 <item android:offset="0.0" android:color="#00F0FF" />
                 <item android:offset="0.5" android:color="#7F52FF" />
-                <item android:offset="1.0" android:color="#FF2E93" />
+                <item android:offset="1.0" android:color="#FF007F" />
             </gradient>
         </aapt:attr>
     </path>

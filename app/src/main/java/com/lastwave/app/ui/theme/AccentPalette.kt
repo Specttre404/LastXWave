@@ -17,7 +17,7 @@ sealed class AppAccent(
         name = "Amber Tube",
         primary = Color(0xFFFF8C00),     // Thermionic Glow Orange
         secondary = Color(0xFFFFB703),   // Filament Amber
-        container = Color(0xFF331A05),   // Warm Mahogany Glass
+        container = Color(0xFF331800),   // Mahogany Glow Container
         surfaceTint = Color(0xFFFFA000),
         background = Color(0xFF180E04)
     )
@@ -28,7 +28,7 @@ sealed class AppAccent(
         name = "Obsidian Gold",
         primary = Color(0xFFD4AF37),     // 24K Metallic Champagne Gold
         secondary = Color(0xFFFFF275),   // Pale Gold Sheen
-        container = Color(0xFF141518),   // Deep Obsidian Monolith
+        container = Color(0xFF121316),   // Obsidian Monolith Container
         surfaceTint = Color(0xFFE5C158),
         background = Color(0xFF0C0D0E)   // Obsidian Black Chassis
     )

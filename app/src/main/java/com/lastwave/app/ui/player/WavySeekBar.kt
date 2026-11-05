@@ -85,8 +85,8 @@ fun WavySeekBar(
         0f
     }
 
-    val primaryColor = ambientColor ?: Color(0xFF00F0FF)
-    val secondaryColor = MaterialTheme.colorScheme.secondary.takeIf { ambientColor != null } ?: Color(0xFFFF2E93)
+    val primaryColor = ambientColor ?: MaterialTheme.colorScheme.primary
+    val secondaryColor = MaterialTheme.colorScheme.tertiary
     val inactiveColor = Color.White.copy(alpha = 0.22f)
     val textColor = Color(0xFFCBD5E1)
 
@@ -294,9 +294,9 @@ fun WavySeekBar(
                             if (thumbX > 0f) {
                                 val prismBrush = Brush.horizontalGradient(
                                     colors = listOf(
-                                        Color(0xFF00F0FF),
-                                        Color(0xFFFF2E93),
-                                        Color(0xFFFFC700),
+                                        primaryColor,
+                                        secondaryColor,
+                                        primaryColor.copy(alpha = 0.8f),
                                     ),
                                     startX = 0f,
                                     endX = thumbX,
@@ -309,7 +309,7 @@ fun WavySeekBar(
                                 )
                             }
                             drawCircle(
-                                color = Color(0xFF00F0FF),
+                                color = primaryColor,
                                 radius = 9.dp.toPx(),
                                 center = Offset(thumbX, centerY),
                             )

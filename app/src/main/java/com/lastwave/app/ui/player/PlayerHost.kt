@@ -2244,163 +2244,22 @@ private fun SeekBar(
 ) {
     val progress by progressState.collectAsStateWithLifecycle()
 
-    if (wavyEnabled || seekbarStyle != com.lastwave.app.data.local.SeekbarStyle.MINIMAL_PILL) {
-        WavySeekBar(
-            positionMs = progress.positionMs,
-            durationMs = progress.durationMs,
-            isPlaying = isPlaying,
-            onSeek = onSeek,
-            isTranslucent = isTranslucent,
-            trackKey = trackKey,
-            seekbarStyle = seekbarStyle,
-            ambientColor = MaterialTheme.colorScheme.primary,
-        )
-        return
-    }
-
-    var dragging by remember(trackKey) { mutableStateOf(false) }
-    var dragFraction by remember(trackKey) { mutableFloatStateOf(0f) }
-
-    val boundedDurationMs = progress.durationMs.coerceAtLeast(0L)
-    val currentFraction = if (boundedDurationMs > 0L) {
-        (progress.positionMs.toDouble() / boundedDurationMs.toDouble()).toFloat().coerceIn(0f, 1f)
+    val effectiveStyle = if (!wavyEnabled && seekbarStyle == com.lastwave.app.data.local.SeekbarStyle.WAVY_FLUID) {
+        com.lastwave.app.data.local.SeekbarStyle.MINIMAL_PILL
     } else {
-        0f
-    }
-    val fraction = if (dragging) dragFraction else currentFraction
-    val shownMs = if (dragging) {
-        (dragFraction * boundedDurationMs).toLong().coerceIn(0L, boundedDurationMs)
-    } else {
-        progress.positionMs.coerceIn(0L, boundedDurationMs)
+        seekbarStyle
     }
 
-    val primaryColor = Color(0xFF00F0FF)
-    val activeBrush = Brush.horizontalGradient(listOf(Color(0xFF00F0FF), Color(0xFFFF2E93)))
-    val inactiveColor = Color.White.copy(alpha = 0.22f)
-    val textColor = Color(0xFFCBD5E1)
-
-    // Same RTL pin as above: custom Canvas draws LTR, invisible Slider must match it.
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(44.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Canvas(modifier = Modifier.fillMaxWidth().height(44.dp)) {
-                val width = size.width
-                val height = size.height
-                val centerY = height / 2f
-                val trackHeightPx = 14.dp.toPx()
-                val cornerRadius = CornerRadius(trackHeightPx / 2f, trackHeightPx / 2f)
-                val thumbWidthPx = 5.dp.toPx()
-                val thumbHeightPx = 38.dp.toPx()
-                val thumbClearancePx = 9.dp.toPx()
-                val rawThumbCenterX = fraction * width
-                val thumbCenterX = if (width > thumbWidthPx) {
-                    rawThumbCenterX.coerceIn(thumbWidthPx / 2f, width - thumbWidthPx / 2f)
-                } else {
-                    width / 2f
-                }
-                val activeEndX = (thumbCenterX - thumbClearancePx).coerceIn(0f, width)
-                val inactiveStartX = (thumbCenterX + thumbClearancePx).coerceIn(0f, width)
-
-                // Thick active capsule ending before the vertical thumb.
-                if (activeEndX > 0f) {
-                    drawRoundRect(
-                        brush = activeBrush,
-                        topLeft = Offset(0f, centerY - trackHeightPx / 2f),
-                        size = Size(activeEndX, trackHeightPx),
-                        cornerRadius = cornerRadius,
-                    )
-                }
-
-                // Thick inactive capsule starting after the vertical thumb.
-                if (inactiveStartX < width) {
-                    drawRoundRect(
-                        color = inactiveColor,
-                        topLeft = Offset(inactiveStartX, centerY - trackHeightPx / 2f),
-                        size = Size(width - inactiveStartX, trackHeightPx),
-                        cornerRadius = cornerRadius,
-                    )
-                }
-
-                // Small endpoint marker from the reference design.
-                val endpointX = width - trackHeightPx / 2f
-                if (inactiveStartX < endpointX) {
-                    drawCircle(
-                        color = primaryColor.copy(alpha = 0.86f),
-                        radius = 2.dp.toPx(),
-                        center = Offset(endpointX, centerY),
-                    )
-                }
-
-                // Tall vertical pill thumb with clear space on both sides.
-                val thumbX = thumbCenterX - thumbWidthPx / 2f
-                val thumbCornerRadius = CornerRadius(thumbWidthPx / 2f, thumbWidthPx / 2f)
-
-                drawRoundRect(
-                    color = primaryColor,
-                    topLeft = Offset(thumbX, centerY - thumbHeightPx / 2f),
-                    size = Size(thumbWidthPx, thumbHeightPx),
-                    cornerRadius = thumbCornerRadius,
-                )
-            }
-
-            // Invisible Material interaction layer: custom visuals, reliable seeking semantics.
-            Slider(
-                value = fraction,
-                onValueChange = {
-                    dragging = true
-                    dragFraction = it
-                },
-                onValueChangeFinished = {
-                    if (boundedDurationMs > 0L) {
-                        onSeek((dragFraction * boundedDurationMs).toLong().coerceIn(0L, boundedDurationMs))
-                    }
-                    dragging = false
-                },
-                valueRange = 0f..1f,
-                enabled = boundedDurationMs > 0L,
-                modifier = Modifier.fillMaxSize(),
-                colors = SliderDefaults.colors(
-                    thumbColor = Color.Transparent,
-                    activeTrackColor = Color.Transparent,
-                    inactiveTrackColor = Color.Transparent,
-                    activeTickColor = Color.Transparent,
-                    inactiveTickColor = Color.Transparent,
-                    disabledThumbColor = Color.Transparent,
-                    disabledActiveTrackColor = Color.Transparent,
-                    disabledInactiveTrackColor = Color.Transparent,
-                    disabledActiveTickColor = Color.Transparent,
-                    disabledInactiveTickColor = Color.Transparent,
-                ),
-            )
-        }
-
-        Spacer(Modifier.height(2.dp))
-
-        // Time labels
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                text = formatTime(shownMs),
-                style = if (isTranslucent) MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium) else MaterialTheme.typography.labelMedium,
-                color = textColor,
-            )
-            Text(
-                text = "−${formatTime((boundedDurationMs - shownMs).coerceAtLeast(0))}",
-                style = if (isTranslucent) MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium) else MaterialTheme.typography.labelMedium,
-                color = textColor,
-            )
-        }
-    }
-    }
+    WavySeekBar(
+        positionMs = progress.positionMs,
+        durationMs = progress.durationMs,
+        isPlaying = isPlaying,
+        onSeek = onSeek,
+        isTranslucent = isTranslucent,
+        trackKey = trackKey,
+        seekbarStyle = effectiveStyle,
+        ambientColor = MaterialTheme.colorScheme.primary,
+    )
 }
 
 @Composable

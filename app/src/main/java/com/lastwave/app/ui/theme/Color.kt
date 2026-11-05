@@ -19,6 +19,16 @@ val GlassSurfacePanel = Color(0xFF0D121F)
 val GlassBorderActive = Color(0x4D00F0FF)
 val BokehBlurOverlay = Color(0x66020408)
 
+// 1. Amber Tube: Thermionic vacuum-tube warm amber/orange
+val AmberTubePrimary = Color(0xFFFF8C00)       // Vivid glowing orange (#FF8C00)
+val AmberTubeSecondary = Color(0xFFFFB703)     // Filament amber (#FFB703)
+val AmberTubeContainer = Color(0xFF331800)     // Mahogany glow container (#331800)
+
+// 2. Obsidian Gold: Jet black chassis with 24K metallic champagne gold
+val ObsidianGoldPrimary = Color(0xFFD4AF37)     // 24K Champagne metallic gold (#D4AF37)
+val ObsidianGoldSecondary = Color(0xFFFFF275)   // Pale reflective gold (#FFF275)
+val ObsidianGoldContainer = Color(0xFF121316)   // Obsidian chassis black (#121316)
+
 data class AudiophileAccentTheme(
     val id: String,
     val name: String,

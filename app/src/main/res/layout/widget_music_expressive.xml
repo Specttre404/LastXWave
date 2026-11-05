@@ -33,7 +33,7 @@
             android:ellipsize="end"
             android:fontFamily="serif"
             android:maxLines="1"
-            android:text="Ananta Dhvani"
+            android:text="LastXWave"
             android:textColor="#FFFFFF"
             android:textSize="15sp"
             android:textStyle="bold" />

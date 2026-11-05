@@ -225,7 +225,7 @@ fun FeedScreen(
                 .adaptiveContentWidth(maxWidth = 920.dp),
         ) {
             ExpressiveHeader(
-                title = "Ananta Dhvani",
+                title = "LastXWave",
                 actions = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -853,7 +853,7 @@ private fun InfiniteRadioHero(
                                 modifier = Modifier.size(12.dp),
                             )
                             Text(
-                                "Ananta Dhvani Instant Radio",
+                                "LastXWave Instant Radio",
                                 style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.1.sp),
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary,

@@ -386,7 +386,7 @@ class MusicPlaybackService : MediaBrowserServiceCompat() {
             }
             val panoIntent = Intent("com.adam.aslfms.notify.playstatechanged").apply {
                 putExtra("state", scrobbleState)
-                putExtra("app-name", "Ananta Dhvani")
+                putExtra("app-name", "LastXWave")
                 putExtra("app-package", packageName)
                 putExtra("track", title)
                 putExtra("artist", artist)

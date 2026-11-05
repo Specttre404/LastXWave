@@ -402,7 +402,6 @@ fun LastWaveNavHost(
                     onOpenYouTubeImport = { navController.navigate(Screen.YouTubeImport.route) },
                     onOpenYouTubeLogin = { navController.navigate(Screen.YouTubeLogin.route) },
                     onOpenExternalImport = { navController.navigate(Screen.ExternalPlaylistImport.route) },
-                    onOpenSquidifyHub = { navController.navigate(Screen.SquidifyHub.route) },
                 )
             }
         }
@@ -453,12 +452,6 @@ fun LastWaveNavHost(
         composable(Screen.ExcludedSongs.route) {
             PredictiveBackScreen(onBack = { navController.popBackStack() }) {
                 com.lastwave.app.ui.settings.ExcludedSongsScreen(onBack = { navController.popBackStack() })
-            }
-        }
-
-        composable(Screen.SquidifyHub.route) {
-            PredictiveBackScreen(onBack = { navController.popBackStack() }) {
-                com.lastwave.app.ui.metro.SquidifyHubScreen(navController = navController)
             }
         }
 

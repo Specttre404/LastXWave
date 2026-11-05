@@ -32,7 +32,7 @@ class MusicBrainzAutoTagger {
             val mbUrl = "https://musicbrainz.org/ws/2/recording?query=$encodedQuery&fmt=json"
 
             val conn = URL(mbUrl).openConnection() as HttpURLConnection
-            conn.setRequestProperty("User-Agent", "AnantaDhvani/1.0 ( contact@lastwave.app )")
+            conn.setRequestProperty("User-Agent", "LastXWave/1.0 ( contact@lastwave.app )")
             conn.connectTimeout = 8000
             conn.readTimeout = 8000
 
@@ -110,7 +110,7 @@ class MusicBrainzAutoTagger {
         return try {
             val caaUrl = "https://coverartarchive.org/release/$releaseMbid"
             val conn = URL(caaUrl).openConnection() as HttpURLConnection
-            conn.setRequestProperty("User-Agent", "AnantaDhvani/1.0 ( contact@lastwave.app )")
+            conn.setRequestProperty("User-Agent", "LastXWave/1.0 ( contact@lastwave.app )")
             conn.connectTimeout = 5000
             conn.readTimeout = 5000
 

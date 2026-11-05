@@ -26,7 +26,7 @@ class ListenBrainzManager @Inject constructor(
                     put("track_metadata", JSONObject().apply {
                         put("artist_name", track.artist)
                         put("track_name", track.title)
-                        put("release_name", track.album ?: "Ananta Dhvani Stream")
+                        put("release_name", track.album ?: "LastXWave Stream")
                     })
                 })
             })

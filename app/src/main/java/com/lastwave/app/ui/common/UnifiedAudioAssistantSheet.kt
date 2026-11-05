@@ -381,7 +381,7 @@ fun UnifiedAudioAssistantSheet(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Filled.PlayArrow, contentDescription = null)
                             Spacer(Modifier.width(8.dp))
-                            Text("Play Now in Ananta Dhvani", fontWeight = FontWeight.Bold)
+                            Text("Play Now in LastXWave", fontWeight = FontWeight.Bold)
                         }
                     }
                 } else {

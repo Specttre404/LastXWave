@@ -1,819 +1,328 @@
 ﻿<!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ananta Dhvani — Official Audiophile Workstation for Android</title>
-
-  <!-- Hardened Zero-Telemetry Content Security Policy -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://api.github.com; connect-src 'self' https://api.github.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self';">
-  <meta name="referrer" content="no-referrer">
-  <meta name="color-scheme" content="dark light">
-
+  <title>LastXWave — Cutting-Edge Audiophile Workstation</title>
+  <meta name="description" content="LastXWave (v1.7.0): Android 17, Apple iOS Liquid Glass, and Bit-Perfect DAC passthrough." />
   <style>
-    /* ==========================================================================
-       Android 17 M3 Expressive & iOS Liquid Glass Dynamic Tokens
-       ========================================================================== */
     :root {
-      --accent: #00F0FF;
-      --accent-secondary: #7F52FF;
-      --accent-tertiary: #FF2E93;
-      --bg-void: #06080D;
-      --bg-card: rgba(15, 20, 32, 0.78);
-      --bg-card-solid: #0F1420;
-      --border-glass: rgba(255, 255, 255, 0.14);
-      --border-specular: rgba(255, 255, 255, 0.28);
-      --text-main: #F8FAFC;
+      --bg: #0B0F19;
+      --surface: rgba(15, 23, 42, 0.75);
+      --surface-border: rgba(255, 255, 255, 0.08);
+      --hdr-cyan: #00E5FF;
+      --hdr-magenta: #FF2E93;
+      --hdr-indigo: #7F52FF;
+      --hdr-emerald: #06D6A0;
+      --hdr-amber: #FFB703;
+      --hdr-purple: #9D4EDD;
+      --text: #F8FAFC;
       --text-muted: #94A3B8;
-      --glow: rgba(0, 240, 255, 0.35);
-      --header-bg: rgba(6, 8, 13, 0.88);
-      --code-bg: rgba(0, 0, 0, 0.65);
-      --badge-bg: rgba(127, 82, 255, 0.18);
-      --badge-text: #00F0FF;
-      --m3-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-      --liquid-glass-shadow: 
-        0 20px 50px rgba(0, 0, 0, 0.55),
-        inset 0 1px 1px rgba(255, 255, 255, 0.35),
-        inset 0 -1px 1px rgba(0, 0, 0, 0.4);
     }
-
-    [data-theme="light"] {
-      --accent: #0284C7;
-      --accent-secondary: #4F46E5;
-      --accent-tertiary: #BE123C;
-      --bg-void: #F8FAFC;
-      --bg-card: rgba(255, 255, 255, 0.92);
-      --bg-card-solid: #FFFFFF;
-      --border-glass: rgba(15, 23, 42, 0.14);
-      --border-specular: rgba(255, 255, 255, 0.95);
-      --text-main: #0F172A;
-      --text-muted: #334155;
-      --glow: rgba(2, 132, 199, 0.25);
-      --header-bg: rgba(248, 250, 252, 0.94);
-      --code-bg: rgba(241, 245, 249, 0.98);
-      --badge-bg: rgba(79, 70, 229, 0.12);
-      --badge-text: #0369A1;
-      --liquid-glass-shadow:
-        0 20px 45px rgba(15, 23, 42, 0.08),
-        inset 0 1px 2px rgba(255, 255, 255, 0.95),
-        inset 0 -1px 1px rgba(15, 23, 42, 0.08);
-    }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
     body {
-      background-color: var(--bg-void);
-      color: var(--text-main);
+      background: var(--bg);
+      color: var(--text);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      overflow-x: hidden;
       line-height: 1.6;
-      transition: background-color 0.35s var(--m3-spring), color 0.3s ease;
+      overflow-x: hidden;
     }
-
-    .ambient-canvas {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      background: radial-gradient(circle 900px at var(--mx, 50%) var(--my, 20%), 
-        var(--glow) 0%, 
-        rgba(127, 82, 255, 0.12) 38%, 
-        transparent 75%);
-      transition: background 0.12s ease-out;
-    }
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(32px) saturate(210%);
-      -webkit-backdrop-filter: blur(32px) saturate(210%);
-      background: var(--header-bg);
-      border-bottom: 1px solid var(--border-glass);
-      padding: 0.85rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 900;
-      font-size: 1.3rem;
-      letter-spacing: -0.5px;
-      color: var(--text-main);
-      text-decoration: none;
-    }
-    .brand svg { filter: drop-shadow(0 0 10px var(--accent)); }
-
-    .nav-actions { display: flex; align-items: center; gap: 1.25rem; }
-    .nav-links { display: flex; align-items: center; gap: 1.25rem; }
-    .nav-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.9rem;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--accent); }
-    @media (max-width: 800px) { .nav-links { display: none; } }
-
-    .theme-toggle-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      box-shadow: var(--liquid-glass-shadow);
-      color: var(--text-main);
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.15rem;
-      transition: all 0.3s var(--m3-spring);
-    }
-    .theme-toggle-btn:hover {
-      transform: scale(1.1) rotate(15deg);
-      border-color: var(--accent);
-    }
-
-    main {
-      position: relative;
-      z-index: 10;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 3rem 1.5rem;
-    }
-
-    /* Hero Section */
-    .hero-container {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      align-items: center;
-      gap: 3.5rem;
-      margin-bottom: 4rem;
-    }
-    @media (max-width: 900px) {
-      .hero-container { grid-template-columns: 1fr; text-align: center; gap: 2.5rem; }
-    }
-
-    .status-badge {
+    .container { max-width: 1140px; margin: 0 auto; padding: 48px 24px; }
+    .hero { text-align: center; padding: 32px 0 24px; }
+    .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 18px;
-      border-radius: 999px;
-      background: var(--badge-bg);
-      border: 1px solid var(--accent-secondary);
-      box-shadow: 0 0 20px rgba(127, 82, 255, 0.25);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      color: var(--hdr-cyan);
       font-size: 0.85rem;
-      font-weight: 800;
-      margin-bottom: 1.25rem;
-      color: var(--badge-text);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
     }
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 10px var(--accent);
-      animation: pulse 1.8s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.35; transform: scale(0.8); }
-    }
-
-    h1 {
-      font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+    .hero h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
       font-weight: 900;
-      line-height: 1.08;
-      letter-spacing: -1.5px;
-      margin-bottom: 1.25rem;
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--hdr-cyan) 0%, var(--hdr-indigo) 50%, var(--hdr-magenta) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 35px var(--glow));
+      margin-bottom: 14px;
     }
-
-    .tagline {
+    .hero p {
       font-size: 1.2rem;
       color: var(--text-muted);
-      margin-bottom: 2rem;
-      line-height: 1.7;
+      max-width: 760px;
+      margin: 0 auto 32px;
     }
-
-    /* Official Adaptive Launcher Icon Stage */
-    .icon-showcase {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-
-    .adaptive-icon-card {
-      width: 260px;
-      height: 260px;
-      border-radius: 58px;
-      background: linear-gradient(135deg, #0A0D18 0%, #0E1221 50%, #12172A 100%);
-      border: 1px solid var(--border-specular);
-      box-shadow:
-        0 25px 70px rgba(0, 0, 0, 0.75),
-        0 0 60px var(--glow),
-        inset 0 1px 2px rgba(255, 255, 255, 0.4);
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      transition: transform 0.4s var(--m3-spring);
-    }
-    .adaptive-icon-card:hover {
-      transform: scale(1.05) rotate(2deg);
-    }
-
-    .ring-glow-1 {
-      position: absolute;
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      border: 1.5px solid rgba(0, 240, 255, 0.35);
-      box-shadow: 0 0 25px rgba(0, 240, 255, 0.25);
-      animation: breath 4s ease-in-out infinite alternate;
-    }
-    .ring-glow-2 {
-      position: absolute;
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      border: 2px solid rgba(127, 82, 255, 0.45);
-      box-shadow: 0 0 20px rgba(127, 82, 255, 0.3);
-      animation: breath 3s ease-in-out infinite alternate-reverse;
-    }
-
-    @keyframes breath {
-      0% { transform: scale(0.95); opacity: 0.6; }
-      100% { transform: scale(1.06); opacity: 1; }
-    }
-
-    .icon-vector-svg {
-      width: 140px;
-      height: 140px;
-      z-index: 2;
-      filter: drop-shadow(0 0 20px var(--accent));
-    }
-
-    /* Download Card */
-    .download-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(28px) saturate(200%);
-      border: 1px solid var(--border-glass);
-      border-radius: 28px;
-      padding: 1.75rem;
-      box-shadow: var(--liquid-glass-shadow);
-      margin-bottom: 3.5rem;
-    }
-
-    .btn-download {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      width: 100%;
-      padding: 1.25rem;
-      border-radius: 20px;
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: #06080D;
-      background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-      text-decoration: none;
-      box-shadow: 0 0 35px var(--glow);
-      transition: all 0.25s var(--m3-spring);
-    }
-    .btn-download:hover {
-      transform: translateY(-3px) scale(1.015);
-      box-shadow: 0 0 50px var(--glow);
-    }
-
-    .checksum-box {
-      margin-top: 1.25rem;
-      background: var(--code-bg);
-      border: 1px solid var(--border-glass);
-      border-radius: 16px;
-      padding: 12px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .checksum-hash {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.8rem;
-      color: var(--accent);
-      word-break: break-all;
-    }
-
-    .btn-copy {
-      align-self: flex-end;
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      color: var(--text-main);
-      padding: 6px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      font-weight: 700;
-      transition: all 0.2s var(--m3-spring);
-    }
-    .btn-copy:hover {
-      background: var(--accent);
-      color: #000;
-    }
-
-    /* Testing Notice Banner */
     .notice-card {
-      background: linear-gradient(135deg, rgba(127, 82, 255, 0.15) 0%, rgba(0, 240, 255, 0.1) 100%);
-      border: 1px solid var(--accent-secondary);
+      background: radial-gradient(circle at top left, rgba(255, 46, 147, 0.12), rgba(127, 82, 255, 0.08) 60%, rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(255, 46, 147, 0.35);
       border-radius: 24px;
-      padding: 1.75rem;
-      margin-bottom: 3.5rem;
-      box-shadow: var(--liquid-glass-shadow);
+      padding: 28px 32px;
+      margin-bottom: 48px;
+      box-shadow: 0 0 30px rgba(255, 46, 147, 0.15);
     }
-    .notice-title {
-      font-size: 1.3rem;
-      font-weight: 900;
-      margin-bottom: 0.5rem;
-      color: var(--accent);
-    }
-
-    /* Content Cards Grid */
-    .section-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 2rem;
-      margin-bottom: 3.5rem;
-    }
-
-    .glass-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(28px) saturate(190%);
-      border: 1px solid var(--border-glass);
-      border-radius: 28px;
-      padding: 2rem;
-      box-shadow: var(--liquid-glass-shadow);
-      transition: all 0.3s var(--m3-spring);
-    }
-    .glass-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-4px);
-    }
-
-    .glass-card h2 {
-      font-size: 1.5rem;
-      font-weight: 900;
-      margin-bottom: 1rem;
-      color: var(--text-main);
-    }
-
-    .manifesto-list {
-      list-style: none;
+    .notice-header {
       display: flex;
-      flex-direction: column;
+      align-items: center;
       gap: 12px;
-    }
-    .manifesto-list li {
-      position: relative;
-      padding-left: 24px;
-      color: var(--text-muted);
-    }
-    .manifesto-list li::before {
-      content: "✦";
-      position: absolute;
-      left: 0;
-      color: var(--accent);
-    }
-
-    /* Roadmap Card */
-    .roadmap-badge {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 50px;
-      background: rgba(255, 46, 147, 0.2);
-      color: var(--accent-tertiary);
-      border: 1px solid var(--accent-tertiary);
-      font-size: 0.8rem;
+      margin-bottom: 14px;
+      font-size: 1.15rem;
       font-weight: 800;
-      margin-bottom: 1rem;
+      color: var(--hdr-magenta);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
-
-    /* Changelog Timeline */
-    .timeline {
+    .notice-body { color: #E2E8F0; font-size: 1rem; line-height: 1.7; }
+    .notice-pills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .notice-pill {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    section { margin-bottom: 56px; }
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 20px;
       display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      margin-top: 1rem;
+      align-items: center;
+      gap: 12px;
+      color: #FFFFFF;
     }
-    .timeline-item {
-      border-left: 2px solid var(--accent);
-      padding-left: 1.25rem;
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 20px;
+      padding: 24px 26px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.25s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .card h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card ul { list-style: none; }
+    .card li {
       position: relative;
+      padding-left: 20px;
+      margin-bottom: 10px;
+      color: #CBD5E1;
+      font-size: 0.95rem;
     }
-    .timeline-item::before {
-      content: "";
+    .card li::before {
+      content: "•";
       position: absolute;
-      left: -6px;
-      top: 4px;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--accent);
+      left: 4px;
+      color: var(--hdr-cyan);
+      font-weight: bold;
+      font-size: 1.2rem;
+      line-height: 1;
     }
-    .version-tag {
-      font-weight: 800;
-      color: var(--accent);
-      font-size: 1.05rem;
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin: 32px 0;
     }
-
-    /* Pantheon Table */
-    .pantheon-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
+    .tag {
+      padding: 10px 20px;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
       font-size: 0.9rem;
+      backdrop-filter: blur(12px);
+      transition: transform 0.2s ease;
     }
-    .pantheon-table th, .pantheon-table td {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border-glass);
-      text-align: left;
-    }
-    .pantheon-table th {
-      color: var(--text-muted);
-      font-weight: 800;
-    }
-
+    .tag:hover { transform: translateY(-3px) scale(1.02); }
     footer {
-      text-align: center;
-      padding: 3rem 1.5rem;
+      border-top: 1px solid var(--surface-border);
+      padding: 40px 0 20px;
       color: var(--text-muted);
       font-size: 0.9rem;
-      border-top: 1px solid var(--border-glass);
+      text-align: center;
+    }
+    .disclaimer-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 18px 24px;
+      border-radius: 14px;
+      margin-top: 24px;
+      text-align: left;
+      font-size: 0.85rem;
+      line-height: 1.6;
     }
   </style>
 </head>
 <body>
-
-  <div class="ambient-canvas" id="ambientMesh"></div>
-
-  <header>
-    <a href="#" class="brand">
-      <svg width="32" height="32" viewBox="0 0 108 108" fill="none">
-        <defs>
-          <linearGradient id="brandWave" x1="30" y1="54" x2="78" y2="54" gradientUnits="userSpaceOnUse">
-            <stop offset="0.0" stop-color="var(--accent)" />
-            <stop offset="0.5" stop-color="var(--accent-secondary)" />
-            <stop offset="1.0" stop-color="var(--accent-tertiary)" />
-          </linearGradient>
-        </defs>
-        <path d="M 30,54 C 36,54 38,32 46,32 C 54,32 52,76 62,76 C 70,76 72,54 78,54"
-          stroke="url(#brandWave)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
-      <span>Ananta Dhvani</span>
-    </a>
-    <div class="nav-actions">
-      <nav class="nav-links">
-        <a href="#manifesto">Manifesto</a>
-        <a href="#roadmap">Roadmap</a>
-        <a href="#changelog">Changelog</a>
-        <a href="#pantheon">Pantheon</a>
-        <a href="https://github.com/Specttre404/AnantaDhvani" target="_blank" rel="noopener">GitHub</a>
-      </nav>
-      <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Light / Dark Mode">
-        <span id="themeIcon">☀️</span>
-      </button>
-    </div>
-  </header>
-
-  <main>
-    <!-- Hero Section -->
-    <section class="hero-container">
-      <div>
-        <div class="status-badge">
-          <span class="status-dot"></span>
-          <span id="releaseTag">v1.7.0-HDR Active</span>
+  <div class="container">
+    <header class="hero">
+      <div class="hero-badge">⚡ Production Build v1.7.0</div>
+      <h1>LastXWave</h1>
+      <p>The bleeding-edge, dual-engine audiophile music streaming workstation for Android.</p>
+      <div class="tag-cloud">
+        <div class="tag" style="background: rgba(0, 229, 255, 0.12); border: 1px solid rgba(0, 229, 255, 0.5); box-shadow: 0 0 16px rgba(0, 229, 255, 0.25);">
+          <span>⚡</span><strong style="color: #00E5FF;">android-17</strong>
         </div>
-        <h1>Pure Audiophile Soundstage.</h1>
-        <p class="tagline">
-          The sovereign, high-fidelity music workstation for Android. Native Bauer BS2B binaural crossfeed, parametric AutoEQ target curves, Material 3 Expressive, and iOS Liquid Glass.
-        </p>
+        <div class="tag" style="background: rgba(127, 82, 255, 0.15); border: 1px solid rgba(127, 82, 255, 0.5); box-shadow: 0 0 18px rgba(127, 82, 255, 0.3);">
+          <span>🪟</span><strong style="color: #B899FF;">ios-liquid-glass</strong>
+        </div>
+        <div class="tag" style="background: rgba(255, 46, 147, 0.12); border: 1px solid rgba(255, 46, 147, 0.5); box-shadow: 0 0 16px rgba(255, 46, 147, 0.25);">
+          <span>🎨</span><strong style="color: #FF2E93;">material3-expressive</strong>
+        </div>
+        <div class="tag" style="background: rgba(6, 214, 160, 0.12); border: 1px solid rgba(6, 214, 160, 0.5); box-shadow: 0 0 16px rgba(6, 214, 160, 0.25);">
+          <span>🎵</span><strong style="color: #06D6A0;">bit-perfect-audio</strong>
+        </div>
+        <div class="tag" style="background: rgba(157, 78, 221, 0.12); border: 1px solid rgba(157, 78, 221, 0.5); box-shadow: 0 0 16px rgba(157, 78, 221, 0.25);">
+          <span>🎛️</span><strong style="color: #C77DFF;">libsoxr-dsp</strong>
+        </div>
+        <div class="tag" style="background: rgba(255, 183, 3, 0.12); border: 1px solid rgba(255, 183, 3, 0.5); box-shadow: 0 0 16px rgba(255, 183, 3, 0.25);">
+          <span>🔊</span><strong style="color: #FFB703;">media3-exoplayer</strong>
+        </div>
+      </div>
+    </header>
 
-        <div class="download-card">
-          <a id="downloadButton" href="https://github.com/Specttre404/AnantaDhvani/releases/tag/v1.7.0-HDR" class="btn-download">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>
-            </svg>
-            <span id="downloadLabel">Download Release APK (v1.7.0-HDR)</span>
-          </a>
-          <div class="checksum-box">
-            <div style="font-size: 0.85rem; color: var(--text-muted);">Verified Distribution SHA-256 Checksum:</div>
-            <div class="checksum-hash" id="shaText">a2281c3a647d9e830f2c418e22f2c3cc330ee8f865e</div>
-            <button class="btn-copy" onclick="copyChecksum()">Copy Hash</button>
+    <div class="notice-card">
+      <div class="notice-header">
+        <span>📢</span> Important Notice: Project Status & Hiatus
+      </div>
+      <div class="notice-body">
+        <p><strong>Development Status: Temporarily On Hold / Halted</strong></p>
+        <p style="margin-top: 8px;">
+          Due to personal reasons, active development on this app and repository fork is temporarily paused.
+          Once everything is sorted out, <strong>we will bounce back with a bang!</strong>
+        </p>
+      </div>
+      <div class="notice-pills">
+        <div class="notice-pill">🔬 Active Testing Phase</div>
+        <div class="notice-pill">👤 Architected & Built by Ishan</div>
+        <div class="notice-pill">🌐 English Language Only</div>
+        <div class="notice-pill">❤️ Passion Project & 1st Project Ever</div>
+      </div>
+    </div>
+
+    <section>
+      <div class="section-title"><span>🌌</span> Vision & Philosophy</div>
+      <div class="card" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.6));">
+        <p style="font-size: 1.05rem; color: #E2E8F0; margin-bottom: 16px;">
+          <strong>LastXWave</strong> was founded on an unapologetic premise: <strong>absolute acoustic transparency and cutting-edge visual modernism without compromise.</strong>
+        </p>
+        <p style="color: var(--text-muted); margin-bottom: 14px;">
+          Standard mobile operating systems systematically compress, resample, and throttle audio fidelity through native mixer algorithms. LastXWave bypasses the Android system audio flinger entirely, streaming high-definition digital signals directly to external hardware DACs in their pure, native resolution.
+        </p>
+        <p style="color: var(--text-muted);">
+          Visually, the app pioneers a seamless dual-engine design philosophy: fusing the tactile, asymmetric springs of <strong>Material 3 Expressive (Android 17)</strong> with the refractive specular translucency of <strong>Apple iOS Liquid Glass</strong>.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><span>🚀</span> Complete Feature Manifest (v1.7.0)</div>
+      <div class="card-grid">
+        <div class="card">
+          <h3 style="color: var(--hdr-emerald);"><span>🎵</span> Audiophile Audio Engine & DSP</h3>
+          <ul>
+            <li><strong>Bit-Perfect USB DAC Routing:</strong> Direct UAC2 hardware communication bypassing the Android OS audio flinger.</li>
+            <li><strong>Dual-Crystal Master Clocks:</strong> Native hardware switching (44.1 kHz vs. 48 kHz base) with <strong>libsoxr</strong> resampling fallback.</li>
+            <li><strong>High-Res Lossless Codecs:</strong> 24-bit / 192 kHz FLAC, Opus (160 kbps), and AAC (up to 256 kbps).</li>
+            <li><strong>AndroidX Media3 Framework:</strong> Solid background audio persistence, lock screen transports, and Android Auto interface.</li>
+            <li><strong>Real-Time FFT Visualizer:</strong> Hardware-accelerated OpenGL / Canvas audio oscilloscope and live spectrum tracking.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="color: var(--hdr-magenta);"><span>🎨</span> Dual-Engine UI Architecture</h3>
+          <ul>
+            <li><strong>Material 3 Expressive Engine:</strong> Dynamic Monet palette extraction, asymmetric pill geometry, and tactile spring physics.</li>
+            <li><strong>Apple iOS Liquid Glass Engine:</strong> Real-time refractive shader blur via <code>@kyant/backdrop</code> with specular frosted borders.</li>
+            <li><strong>Persistent Floating Mini-Player:</strong> Docked floating player with animated entry, spinning vinyl physics, and touch sheet expansion.</li>
+            <li><strong>Responsive Command Dock:</strong> 3-tab unified pill (Feed, Discover, Playlists) with active animated equalizer (<code>GraphicEq</code>).</li>
+            <li><strong>7 Shader Seekbar Variants:</strong> Android 17 Wavy Fluid, ViVi Capsule, Analog Mixing Console, Metro Segmented Dash, Minimal Needle, Prism Neon Ribbon, and Nuvia Live Waveform.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="color: var(--hdr-cyan);"><span>🌐</span> Playback Automation & Services</h3>
+          <ul>
+            <li><strong>Endless Radio Autoplay:</strong> Automatic queue replenishment using InnerTube/YouTube Music seeds when tracks near queue end.</li>
+            <li><strong>Synchronized Live Lyrics:</strong> Millisecond-accurate animated typography powered by the <strong>LRCLIB API</strong>.</li>
+            <li><strong>Universal Scrobbler:</strong> Native Last.fm REST synchronization and system-wide ListenBrainz broadcast support.</li>
+            <li><strong>Modern Storage:</strong> Jetpack Room SQLite local library caching and Jetpack DataStore reactive settings.</li>
+            <li><strong>Dedicated English Language:</strong> Fully streamlined UI localized purely in English.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><span>🗺️</span> Future Roadmap & Upcoming Pipeline</div>
+      <div class="card" style="border-color: rgba(0, 229, 255, 0.3);">
+        <p style="color: #E2E8F0; margin-bottom: 18px; font-weight: 600;">
+          Our relentless ambition to provide the most advanced, modern, cutting-edge audiophile app in existence:
+        </p>
+        <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+          <div style="background: rgba(0,0,0,0.25); padding: 18px; border-radius: 14px; border-left: 4px solid var(--hdr-amber);">
+            <strong style="color: var(--hdr-amber); font-size: 1.05rem;">💎 Studio-Master Streaming Quality</strong>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Uncapped bitrate streaming pipeline targeting maximum master-grade acoustic reproduction.</p>
+          </div>
+          <div style="background: rgba(0,0,0,0.25); padding: 18px; border-radius: 14px; border-left: 4px solid var(--hdr-indigo);">
+            <strong style="color: var(--hdr-indigo); font-size: 1.05rem;">🎛️ Bleeding-Edge Parametric DSP</strong>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">15-band parametric equalizer, AutoEQ database import, room impulse response convolution, and crossfeed filters.</p>
+          </div>
+          <div style="background: rgba(0,0,0,0.25); padding: 18px; border-radius: 14px; border-left: 4px solid var(--hdr-cyan);">
+            <strong style="color: var(--hdr-cyan); font-size: 1.05rem;">📦 Modular Audio Providers (.lwp)</strong>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Installer support for encrypted external community-developed stream provider packages.</p>
           </div>
         </div>
-
-        <!-- Dynamic HDR Tech-Stack Showcase Pills -->
-        <div class="tech-pill-container" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1.5rem;">
-          <span style="background: rgba(0, 240, 255, 0.12); color: #00F0FF; border: 1px solid #00F0FF; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 800;">⚡ Android 17 Canary (SDK 37)</span>
-          <span style="background: rgba(127, 82, 255, 0.12); color: #7F52FF; border: 1px solid #7F52FF; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 800;">🧊 M3 Expressive &amp; iOS Liquid Glass</span>
-          <span style="background: rgba(6, 214, 160, 0.12); color: #06D6A0; border: 1px solid #06D6A0; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 800;">🎧 USB-Exclusive DAC Direct Bypass</span>
-          <span style="background: rgba(255, 46, 147, 0.12); color: #FF2E93; border: 1px solid #FF2E93; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 800;">⚙️ 16 KB Page-Aligned Native ELF</span>
-          <span style="background: rgba(255, 0, 85, 0.12); color: #FF0055; border: 1px solid #FF0055; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 800;">🦑 Squidify Audio Web Bridge</span>
-        </div>
-      </div>
-
-      <!-- Official Adaptive Launcher Icon Stage -->
-      <div class="icon-showcase">
-        <div class="adaptive-icon-card">
-          <div class="ring-glow-1"></div>
-          <div class="ring-glow-2"></div>
-          <svg class="icon-vector-svg" viewBox="0 0 108 108" fill="none">
-            <defs>
-              <linearGradient id="heroWave" x1="30" y1="54" x2="78" y2="54" gradientUnits="userSpaceOnUse">
-                <stop offset="0.0" stop-color="#00F0FF" />
-                <stop offset="0.5" stop-color="#7F52FF" />
-                <stop offset="1.0" stop-color="#FF2E93" />
-              </linearGradient>
-            </defs>
-            <!-- Ambient Glow Wave -->
-            <path d="M 30,54 C 36,54 38,32 46,32 C 54,32 52,76 62,76 C 70,76 72,54 78,54"
-              stroke="url(#heroWave)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.3" />
-            <!-- Harmonic Wave -->
-            <path d="M 30,54 C 36,54 38,32 46,32 C 54,32 52,76 62,76 C 70,76 72,54 78,54"
-              stroke="url(#heroWave)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </div>
       </div>
     </section>
 
-    <!-- Testing Phase Notice -->
-    <section class="notice-card">
-      <div class="notice-title">⚠️ Active Testing & Hardening Phase</div>
-      <p style="color: var(--text-muted); line-height: 1.7;">
-        <strong>Ananta Dhvani</strong> is created and directed by <strong>Ishan (@Specttre404)</strong> with <strong>Google Gemini (Gemini 4 Argon)</strong> as the primary engineering intelligence. The workstation is under continuous testing and hardening to ensure bit-perfect audio delivery, memory safety, and fluid 60fps Liquid Glass rendering across physical Android devices.
-      </p>
-    </section>
-
-<!-- Ananta Dhvani Architecture & Tag Showcase -->
-<section id="ananta-architecture" style="background: #0B0F19; padding: 48px 20px; color: #F8FAFC; font-family: system-ui, -apple-system, sans-serif; border-radius: 28px; border: 1px solid var(--border-glass); margin-bottom: 3.5rem;">
-  <style>
-    @keyframes hdrPulse {
-      0% { box-shadow: 0 0 16px rgba(0, 229, 255, 0.25), inset 0 0 8px rgba(0, 229, 255, 0.1); }
-      50% { box-shadow: 0 0 28px rgba(255, 46, 147, 0.35), inset 0 0 12px rgba(255, 46, 147, 0.2); }
-      100% { box-shadow: 0 0 16px rgba(0, 229, 255, 0.25), inset 0 0 8px rgba(0, 229, 255, 0.1); }
-    }
-    .m3-expressive-tag {
-      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
-      cursor: pointer;
-    }
-    .m3-expressive-tag:hover {
-      transform: translateY(-3px) scale(1.02);
-    }
-  </style>
-
-  <div style="max-width: 1140px; margin: 0 auto; text-align: center;">
-    <h2 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(135deg, #00E5FF 0%, #7F52FF 50%, #FF2E93 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 14px;">
-      Ananta Dhvani Core Architecture
-    </h2>
-    <p style="color: #94A3B8; font-size: 1.1rem; max-width: 780px; margin: 0 auto 36px; line-height: 1.6;">
-      Targeting <strong>Android 17</strong> with a Dual-Engine Visual Pipeline: <strong>Apple iOS Liquid Glass</strong> and <strong>Material 3 Expressive</strong>.
-    </p>
-
-    <!-- Technical Spec Overview Cards -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 36px; text-align: left;">
-      <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); padding: 18px 22px; border-radius: 20px 8px 20px 8px;">
-        <span style="font-size: 0.8rem; text-transform: uppercase; color: #64748B; font-weight: 700; letter-spacing: 0.05em;">Runtime Target</span>
-        <div style="font-size: 1.25rem; font-weight: 800; color: #00E5FF; margin-top: 4px;">Android 17 Preview</div>
-        <div style="font-size: 0.85rem; color: #94A3B8; margin-top: 4px;">Min SDK 29 (16 KB Page-Aligned)</div>
-      </div>
-      <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); padding: 18px 22px; border-radius: 20px 8px 20px 8px;">
-        <span style="font-size: 0.8rem; text-transform: uppercase; color: #64748B; font-weight: 700; letter-spacing: 0.05em;">Audio Pipeline</span>
-        <div style="font-size: 1.25rem; font-weight: 800; color: #06D6A0; margin-top: 4px;">Bit-Perfect UAC2 DAC</div>
-        <div style="font-size: 0.85rem; color: #94A3B8; margin-top: 4px;">libsoxr DSP • Dual Clock Family</div>
-      </div>
-      <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); padding: 18px 22px; border-radius: 20px 8px 20px 8px;">
-        <span style="font-size: 0.8rem; text-transform: uppercase; color: #64748B; font-weight: 700; letter-spacing: 0.05em;">UI &amp; Theming</span>
-        <div style="font-size: 1.25rem; font-weight: 800; color: #FF2E93; margin-top: 4px;">Dual-Engine Hybrid</div>
-        <div style="font-size: 0.85rem; color: #94A3B8; margin-top: 4px;">M3 Expressive &amp; iOS Liquid Glass</div>
-      </div>
-      <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); padding: 18px 22px; border-radius: 20px 8px 20px 8px;">
-        <span style="font-size: 0.8rem; text-transform: uppercase; color: #64748B; font-weight: 700; letter-spacing: 0.05em;">Integrations</span>
-        <div style="font-size: 1.25rem; font-weight: 800; color: #FF0055; margin-top: 4px;">Squidify Lossless Hub</div>
-        <div style="font-size: 0.85rem; color: #94A3B8; margin-top: 4px;">Media3 • LRCLIB • Last.fm</div>
-      </div>
-    </div>
-
-    <!-- Vivid Dynamic HDR Tags -->
-    <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center;">
-      <!-- Android 17 -->
-      <div class="m3-expressive-tag" style="background: rgba(0, 229, 255, 0.12); border: 1px solid rgba(0, 229, 255, 0.5); border-radius: 9999px; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 16px rgba(0, 229, 255, 0.3);">
-        <span style="font-size: 1.2rem;">⚡</span>
-        <span style="color: #00E5FF; font-weight: 800; font-size: 0.95rem;">android-17</span>
-      </div>
-
-      <!-- Apple iOS Liquid Glass -->
-      <div class="m3-expressive-tag" style="background: rgba(127, 82, 255, 0.15); border: 1px solid rgba(127, 82, 255, 0.5); border-radius: 9999px; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 0 18px rgba(127, 82, 255, 0.35);">
-        <span style="font-size: 1.2rem;">🪟</span>
-        <span style="color: #B899FF; font-weight: 800; font-size: 0.95rem;">ios-liquid-glass</span>
-      </div>
-
-      <!-- Material 3 Expressive -->
-      <div class="m3-expressive-tag" style="background: rgba(255, 46, 147, 0.12); border: 1px solid rgba(255, 46, 147, 0.5); border-radius: 18px 6px 18px 6px; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 18px rgba(255, 46, 147, 0.3);">
-        <span style="font-size: 1.2rem;">🎨</span>
-        <span style="color: #FF2E93; font-weight: 800; font-size: 0.95rem;">material3-expressive</span>
-      </div>
-
-      <!-- Bit-Perfect Audio -->
-      <div class="m3-expressive-tag" style="background: rgba(6, 214, 160, 0.12); border: 1px solid rgba(6, 214, 160, 0.5); border-radius: 9999px; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 16px rgba(6, 214, 160, 0.3);">
-        <span style="font-size: 1.2rem;">🎵</span>
-        <span style="color: #06D6A0; font-weight: 800; font-size: 0.95rem;">bit-perfect-audio</span>
-      </div>
-
-      <!-- libsoxr DSP -->
-      <div class="m3-expressive-tag" style="background: rgba(157, 78, 221, 0.12); border: 1px solid rgba(157, 78, 221, 0.5); border-radius: 9999px; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 16px rgba(157, 78, 221, 0.3);">
-        <span style="font-size: 1.2rem;">🎛️</span>
-        <span style="color: #C77DFF; font-weight: 800; font-size: 0.95rem;">libsoxr-dsp</span>
-      </div>
-
-      <!-- Squidify Audio Hub -->
-      <div class="m3-expressive-tag" style="background: rgba(255, 0, 85, 0.12); border: 1px solid rgba(255, 0, 85, 0.5); border-radius: 9999px; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 16px rgba(255, 0, 85, 0.3);">
-        <span style="font-size: 1.2rem;">🦑</span>
-        <span style="color: #FF2E7E; font-weight: 800; font-size: 0.95rem;">squidify-audio-hub</span>
-      </div>
-
-      <!-- Media3 ExoPlayer -->
-      <div class="m3-expressive-tag" style="background: rgba(255, 183, 3, 0.12); border: 1px solid rgba(255, 183, 3, 0.5); border-radius: 9999px; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 16px rgba(255, 183, 3, 0.3);">
-        <span style="font-size: 1.2rem;">🔊</span>
-        <span style="color: #FFB703; font-weight: 800; font-size: 0.95rem;">media3-exoplayer</span>
-      </div>
-
-      <!-- LRCLIB Lyrics -->
-      <div class="m3-expressive-tag" style="background: rgba(56, 239, 125, 0.12); border: 1px solid rgba(56, 239, 125, 0.5); border-radius: 9999px; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 16px rgba(56, 239, 125, 0.3);">
-        <span style="font-size: 1.2rem;">🎼</span>
-        <span style="color: #38EF7D; font-weight: 800; font-size: 0.95rem;">lrclib-lyrics</span>
-      </div>
-
-      <!-- High-Res Lossless -->
-      <div class="m3-expressive-tag" style="background: rgba(224, 170, 255, 0.12); border: 1px solid rgba(224, 170, 255, 0.5); border-radius: 9999px; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 16px rgba(224, 170, 255, 0.3);">
-        <span style="font-size: 1.2rem;">💎</span>
-        <span style="color: #E0AAFF; font-weight: 800; font-size: 0.95rem;">high-res-lossless</span>
-      </div>
-
-      <!-- Jetpack Compose -->
-      <div class="m3-expressive-tag" style="background: rgba(67, 97, 238, 0.12); border: 1px solid rgba(67, 97, 238, 0.5); border-radius: 9999px; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 16px rgba(67, 97, 238, 0.3);">
-        <span style="font-size: 1.2rem;">🧩</span>
-        <span style="color: #4CC9F0; font-weight: 800; font-size: 0.95rem;">jetpack-compose</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-    <!-- Vision, Philosophy & Anti-Podcast Manifesto -->
-    <section id="manifesto" class="section-grid">
-      <div class="glass-card">
-        <h2>🏛️ Vision & Philosophy</h2>
-        <p style="color: var(--text-muted); margin-bottom: 1rem;">
-          Music is an acoustic continuum to be experienced without algorithmic distortion. Ananta Dhvani preserves the full dynamic headroom and original room acoustics intended by artists and sound engineers.
-        </p>
-      </div>
-
-      <div class="glass-card">
-        <h2>⚡ Anti-Podcast Manifesto</h2>
-        <ul class="manifesto-list">
-          <li><strong>Zero Podcast Bloat:</strong> Strictly no talk shows, audiobooks, or commercial feeds.</li>
-          <li><strong>Silent Auto-Tuning:</strong> Background hardware optimization without low-level clutter.</li>
-          <li><strong>Sovereign Privacy:</strong> Zero trackers, zero analytics, zero ad SDKs, cleartext HTTP forbidden.</li>
+    <section>
+      <div class="section-title"><span>🤝</span> Credits & Acknowledgements</div>
+      <div class="card">
+        <p style="color: #CBD5E1; margin-bottom: 14px;">LastXWave stands on the shoulders of phenomenal open-source innovators:</p>
+        <ul style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px;">
+          <li><strong>LastWave & LastWave-Native:</strong> Foundational core player architecture and codebase inspiration.</li>
+          <li><strong>Google AndroidX Media3:</strong> Robust ExoPlayer core and media session infrastructure.</li>
+          <li><strong>@kyant/backdrop:</strong> Revolutionary Compose real-time backdrop blur and shader engine.</li>
+          <li><strong>libsoxr Team:</strong> Audiophile-grade one-dimensional sample rate conversion routines.</li>
+          <li><strong>LRCLIB API:</strong> Free, open community synchronized lyrics database.</li>
+          <li><strong>InnerTube & Piped Contributors:</strong> YouTube Music backend reverse-engineering breakthroughs.</li>
         </ul>
       </div>
     </section>
 
-    <!-- Active Roadmap Section -->
-    <section id="roadmap" class="glass-card" style="margin-bottom: 3.5rem;">
-      <span class="roadmap-badge">IN ACTIVE DEVELOPMENT</span>
-      <h2>🚀 Upcoming Feature Roadmap</h2>
-      <p style="color: var(--text-muted); font-size: 1.05rem; line-height: 1.7;">
-        <strong>Anime OST, Opening (OP) & Ending (ED) Catalog Integration:</strong> Native indexing, synchronized Japanese Furigana (Ruby) lyrics, and high-bitrate acoustic streaming for anime music soundtracks.
-      </p>
-    </section>
-
-    <!-- Version Changelog Timeline (v1.6.1-HDR to v1.7.0-HDR) -->
-    <section id="changelog" class="glass-card" style="margin-bottom: 3.5rem;">
-      <h2>📜 Version Changelog Timeline</h2>
-      <div class="timeline">
-        <div class="timeline-item">
-          <div class="version-tag">v1.7.0-HDR (Current Release)</div>
-          <p style="color: var(--text-muted); font-size: 0.95rem;">
-            Redesigned adaptive launcher icon with specular glow; deep-integrated native Squidify Audio Hub screen; added rotating musical thoughts banner; unified dual-engine theming (M3 & Liquid Glass); completely scrapped app widgets and bottom mini-player.
-          </p>
-        </div>
-        <div class="timeline-item">
-          <div class="version-tag">v1.6.9-HDR</div>
-          <p style="color: var(--text-muted); font-size: 0.95rem;">
-            Enhanced AutoEQ database profile matching for USB DACs; stabilized ExoPlayer buffer tuning and background audio offload.
-          </p>
-        </div>
-        <div class="timeline-item">
-          <div class="version-tag">v1.6.4-HDR</div>
-          <p style="color: var(--text-muted); font-size: 0.95rem;">
-            Integrated AndroidX Palette dynamic color extraction; added sound recognition sheet; hardened security governance.
-          </p>
-        </div>
-        <div class="timeline-item">
-          <div class="version-tag">v1.6.1-HDR</div>
-          <p style="color: var(--text-muted); font-size: 0.95rem;">
-            Initial HDR release foundation with native C++ Bauer BS2B binaural crossfeed and iOS Liquid Glass specular shaders.
-          </p>
-        </div>
+    <footer>
+      <p>© 2026 <strong>LastXWave</strong> • Architected and built with passion by <strong>Ishan</strong>.</p>
+      <div class="disclaimer-box">
+        <strong>⚖️ Disclaimer:</strong> LastXWave is an open-source, non-commercial software project developed strictly for personal use, educational research, and audiophile signal-processing experimentation. All media streams, album artworks, metadata, and lyrics are the intellectual property of their respective copyright holders, artists, and record labels. This project does not host, store, or distribute copyrighted media files.
       </div>
-    </section>
-
-    <!-- Pantheon & Acknowledgements -->
-    <section id="pantheon" class="glass-card" style="margin-bottom: 3.5rem;">
-      <h2>🏆 Acknowledgements & Inspiration Pantheon</h2>
-      <p style="color: var(--text-muted); margin-bottom: 1rem;">
-        Foremost credit to the original <strong><a href="https://github.com/dkanada/lastwave" target="_blank" style="color: var(--accent); text-decoration: none;">LastWave (dkanada/lastwave)</a></strong> foundation and our 21-repo architectural inspiration pantheon:
-      </p>
-
-      <div style="overflow-x: auto;">
-        <table class="pantheon-table">
-          <thead>
-            <tr>
-              <th>Repository / Project</th>
-              <th>Creator / Team</th>
-              <th>Inspiration Domain</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>ArchiveTune</strong></td><td>rukamori</td><td>Analog console aesthetic & purism</td></tr>
-            <tr><td><strong>Nightly</strong></td><td>rukamori</td><td>Fluid edge-to-edge scaffolding</td></tr>
-            <tr><td><strong>Metrolist</strong></td><td>MetrolistGroup</td><td>Panoramic hubs & seekbar precision</td></tr>
-            <tr><td><strong>vivi-music</strong></td><td>vivizzz007</td><td>M3 Expressive spring dynamics</td></tr>
-            <tr><td><strong>BitChord</strong></td><td>kushagrasinghx</td><td>Fretboard & piano chord lyrics</td></tr>
-            <tr><td><strong>Obsidian-Music</strong></td><td>Varun7009</td><td>OLED black surface minimalism</td></tr>
-            <tr><td><strong>Convx</strong></td><td>cosmictaserdev-creator</td><td>FIR convolution IR filtering</td></tr>
-            <tr><td><strong>orb</strong></td><td>theusalbuquerque</td><td>3D particle sphere visualizer</td></tr>
-            <tr><td><strong>OreoTunes</strong></td><td>kurixutian</td><td>Dynamic color extraction layout</td></tr>
-            <tr><td><strong>YumaPlayer</strong></td><td>MuwMx</td><td>Japanese Furigana Ruby lyrics</td></tr>
-            <tr><td><strong>PixelPlayer</strong></td><td>PixelPlayerHQ</td><td>M3 Expressive design tokens</td></tr>
-            <tr><td><strong>namida</strong></td><td>namidaco</td><td>Sub-bass tactile haptics (20–80Hz)</td></tr>
-            <tr><td><strong>BeatWave</strong></td><td>vortexapps67</td><td>Camelot Wheel harmonic mixing</td></tr>
-            <tr><td><strong>MusicBeat</strong></td><td>SamuelAdmand</td><td>Real-time BPM & phrase detection</td></tr>
-            <tr><td><strong>VantaMusic</strong></td><td>drewk312</td><td>WSOLA pitch-independent stretch</td></tr>
-            <tr><td><strong>Lelonio/Square</strong></td><td>Lelonio</td><td>iOS Liquid Glass specular blur</td></tr>
-            <tr><td><strong>Cider</strong></td><td>Cider Collective</td><td>Desktop panoramic architecture</td></tr>
-            <tr><td><strong>Nuvia-Musics</strong></td><td>aadhil06dev</td><td>Real-time acoustic spectrum waveform</td></tr>
-            <tr><td><strong>Prism</strong></td><td>Yigder</td><td>Iridescent chromatic visualizers</td></tr>
-            <tr><td><strong>Octave</strong></td><td>Octave Team</td><td>Bit-perfect DAC stream routing</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <p>Created by <strong>Ishan (@Specttre404)</strong> with <strong>Google Gemini 4 Argon</strong> • <strong>Ananta Dhvani</strong> • Licensed under GNU GPL v3</p>
-  </footer>
-
-  <script>
-    // Ambient Glow Tracker
-    const glowMesh = document.getElementById('ambientMesh');
-    window.addEventListener('pointermove', (e) => {
-      glowMesh.style.setProperty('--mx', `${e.clientX}px`);
-      glowMesh.style.setProperty('--my', `${e.clientY}px`);
-    });
-
-    // Theme Switcher
-    function toggleTheme() {
-      const html = document.documentElement;
-      const target = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      html.setAttribute('data-theme', target);
-      document.getElementById('themeIcon').textContent = target === 'dark' ? '☀️' : '🌙';
-      localStorage.setItem('ananta_theme', target);
-    }
-    const savedTheme = localStorage.getItem('ananta_theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-
-    // Copy Checksum
-    function copyChecksum() {
-      const text = document.getElementById('shaText').textContent.trim();
-      navigator.clipboard.writeText(text);
-      const btn = event.target;
-      btn.textContent = '✓ Copied';
-      setTimeout(() => btn.textContent = 'Copy Hash', 2000);
-    }
-  </script>
+    </footer>
+  </div>
 </body>
 </html>

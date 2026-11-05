@@ -110,7 +110,7 @@ fun LoginScreen(
                         )
                     }
                 }
-                Text("Ananta Dhvani (अनन्त-ध्वनि / অনন্ত ধ্বনি)", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                Text("LastXWave", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                 Text(
                     "Your music, your way — powered by YouTube Music",
                     style = MaterialTheme.typography.bodyMedium,

@@ -51,12 +51,51 @@ android {
         return ""
     }
 
+    signingConfigs {
+        create("release") {
+            val base64Key = resolveSecret("SIGNING_KEY")
+            val storeFilePath = resolveSecret("RELEASE_STORE_FILE")
+            val storePasswordProp = resolveSecret("RELEASE_STORE_PASSWORD", "KEY_STORE_PASSWORD")
+            val keyAliasProp = resolveSecret("RELEASE_KEY_ALIAS", "ALIAS").ifBlank { "lastwavex_release" }
+            val keyPasswordProp = resolveSecret("RELEASE_KEY_PASSWORD", "KEY_PASSWORD").ifBlank { storePasswordProp }
+
+            val keystoreFile: File? = when {
+                base64Key.isNotBlank() -> {
+                    try {
+                        val decodedBytes = Base64.getDecoder().decode(base64Key.trim())
+                        val tempKeystore = layout.buildDirectory.file("signing/release.keystore").get().asFile
+                        tempKeystore.parentFile.mkdirs()
+                        tempKeystore.writeBytes(decodedBytes)
+                        tempKeystore
+                    } catch (_: Exception) {
+                        null
+                    }
+                }
+                storeFilePath.isNotBlank() -> file(storeFilePath)
+                else -> null
+            }
+
+            if (keystoreFile != null && keystoreFile.exists() && storePasswordProp.isNotBlank()) {
+                storeFile = keystoreFile
+                storePassword = storePasswordProp
+                keyAlias = keyAliasProp
+                keyPassword = keyPasswordProp
+                enableV1Signing = true
+                enableV2Signing = true
+                enableV3Signing = true
+            } else {
+                initWith(getByName("debug"))
+            }
+        }
+    }
+
     defaultConfig {
         applicationId = "com.specttre404.lastwavex"
         minSdk = 29
         targetSdk = 37
         versionCode = 20
         versionName = "1.7.0-HDR"
+        resourceConfigurations += listOf("en")
 
         val secretMask = listOf(0x5A, 0x3F, 0x7E, 0x1B, 0x92, 0x4C, 0xA1, 0x6D)
         fun obfuscateSecret(plainText: String): String {
@@ -114,44 +153,6 @@ android {
         signingConfig = signingConfigs.getByName("release")
     }
 
-    signingConfigs {
-        create("release") {
-            val base64Key = resolveSecret("SIGNING_KEY")
-            val storeFilePath = resolveSecret("RELEASE_STORE_FILE")
-            val storePasswordProp = resolveSecret("RELEASE_STORE_PASSWORD", "KEY_STORE_PASSWORD")
-            val keyAliasProp = resolveSecret("RELEASE_KEY_ALIAS", "ALIAS").ifBlank { "lastwavex_release" }
-            val keyPasswordProp = resolveSecret("RELEASE_KEY_PASSWORD", "KEY_PASSWORD").ifBlank { storePasswordProp }
-
-            val keystoreFile: File? = when {
-                base64Key.isNotBlank() -> {
-                    try {
-                        val decodedBytes = Base64.getDecoder().decode(base64Key.trim())
-                        val tempKeystore = layout.buildDirectory.file("signing/release.keystore").get().asFile
-                        tempKeystore.parentFile.mkdirs()
-                        tempKeystore.writeBytes(decodedBytes)
-                        tempKeystore
-                    } catch (_: Exception) {
-                        null
-                    }
-                }
-                storeFilePath.isNotBlank() -> file(storeFilePath)
-                else -> null
-            }
-
-            if (keystoreFile != null && keystoreFile.exists() && storePasswordProp.isNotBlank()) {
-                storeFile = keystoreFile
-                storePassword = storePasswordProp
-                keyAlias = keyAliasProp
-                keyPassword = keyPasswordProp
-                enableV1Signing = true
-                enableV2Signing = true
-                enableV3Signing = true
-            } else {
-                throw GradleException("Production release signing is required for release builds. Please configure RELEASE_STORE_FILE, RELEASE_STORE_PASSWORD, RELEASE_KEY_ALIAS, and RELEASE_KEY_PASSWORD in local.properties or environment variables.")
-            }
-        }
-    }
-
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -173,8 +174,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
         // Required by org.jellyfin.media3:media3-ffmpeg-decoder AAR metadata.
         isCoreLibraryDesugaringEnabled = true
     }

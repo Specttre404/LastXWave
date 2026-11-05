@@ -1,13 +1,12 @@
-# Ananta Dhvani (अनन्त-ध्वनि)
+# LastXWave
 > The cutting-edge, dual-engine audiophile music streaming workstation for Android.
 
 <p align="center">
   <img src="https://img.shields.io/badge/Version-v1.7.0-00E5FF?style=for-the-badge&logo=git&logoColor=0B0F19" alt="Version 1.7.0" />
   <img src="https://img.shields.io/badge/Platform-Android%2017%20Canary-00E5FF?style=for-the-badge&logo=android&logoColor=0B0F19" alt="Android 17" />
   <img src="https://img.shields.io/badge/UI-M3%20Expressive-FF2E93?style=for-the-badge&logo=materialdesign&logoColor=white" alt="M3 Expressive" />
-  <img src="https://img.shields.io/badge/Engine-iOS%20Liquid%20Glass-7F52FF?style=for-the-badge&logo=apple&logoColor=white" alt="iOS Liquid Glass" />
+  <img src="https://img.shields.io/badge/Visual-iOS%20Liquid%20Glass-7F52FF?style=for-the-badge&logo=apple&logoColor=white" alt="iOS Liquid Glass" />
   <img src="https://img.shields.io/badge/Audio-Bit--Perfect%20DAC-06D6A0?style=for-the-badge&logo=soundcharts&logoColor=0B0F19" alt="Bit-Perfect Audio" />
-  <img src="https://img.shields.io/badge/Bridge-Squidify%20Audio%20Hub-FF0055?style=for-the-badge&logo=octopusdeploy&logoColor=white" alt="Squidify Hub" />
   <img src="https://img.shields.io/badge/Framework-Media3%20ExoPlayer-FFB703?style=for-the-badge&logo=googleplay&logoColor=0B0F19" alt="Media3" />
 </p>
 
@@ -20,17 +19,17 @@
 > Please note that due to personal reasons, active development on this app/fork is **temporarily paused**. Once everything is sorted out, **development will bounce back with a bang!**
 > 
 > * **Project Nature:** This is a pure passion project and my **very first software project ever**.
-> * **Author:** Built and maintained with passion by **Ishan**.
-> * **AI Collaboration:** Built and architected using **Google Gemini 4 Aragon**.
-> * **Current Stage:** Active Alpha / Experimental Testing Phase. Features are evolving rapidly.
+> * **Author:** Architected and built with passion by **Ishan**.
+> * **Language:** English (en-US / en-GB standard).
+> * **Current Stage:** Active Alpha / Experimental Testing Phase.
 
 ---
 
 ## 🌌 Vision & Philosophy
 
-**Ananta Dhvani** (Infinite Sound) was founded on a singular obsession: **absolute fidelity and modern aesthetic perfection without compromise.**
+**LastXWave** was founded on an unapologetic premise: **absolute acoustic transparency and cutting-edge visual modernism without compromise.**
 
-* **Zero-Degradation Audio Pipeline:** Standard mobile operating systems resample, choke, and limit high-definition sound through generic software mixers. Ananta Dhvani circumvents these bottlenecks by routing digital audio directly to hardware DACs in its pure, unaltered form.
+* **Zero-Degradation Audio Pipeline:** Standard mobile operating systems systematically compress, resample, and throttle audio fidelity through native mixer algorithms. LastXWave bypasses the Android system audio flinger entirely, streaming high-definition digital signals directly to external hardware DACs in their pure, native resolution.
 * **Dual-Engine Visual Harmony:** We reject cookie-cutter interfaces. The app unites the bold geometry, expressive springs, and dynamic Monet palettes of **Material 3 Expressive (Android 17)** with the specular, refractive elegance of **Apple iOS Liquid Glass**.
 * **Community & Openness:** Built as an authentic, ad-free haven for music lovers, dedicated to pushing Android audio engineering to its bleeding edge.
 
@@ -52,8 +51,7 @@
 * **Responsive Command Dock:** 3-tab unified navigation pill (Feed, Discover, Playlists) featuring an active animated soundwave equalizer indicator (`GraphicEq`).
 * **Custom Seekbar Shader Variants:** Dynamic canvas styling across 7 styles (*Android 17 Wavy Fluid*, *ViVi Capsule*, *Analog Mixing Console*, *Metro Segmented Dash*, *Minimal Needle*, *Prism Neon Ribbon*, and *Nuvia Live Waveform*).
 
-### 🌐 Hybrid Integrations & Playback Automation
-* **Squidify Audio Hub:** Hybrid hardware-accelerated WebView bridge with bidirectional JavaScript bindings (`SquidifyBridge`) and network interception for lossless web audio extraction.
+### 🌐 Playback Automation & Services
 * **Endless Radio Autoplay:** Predictive queue replenishment engine that seamlessly fetches related tracks via InnerTube/YouTube Music seeds when approaching queue exhaustion.
 * **Synced Typographic Lyrics:** Millisecond-accurate live lyrics powered by the **LRCLIB API** with kinetic animation tracking.
 * **Unified Scrobbler:** Native Last.fm REST integration and broadcast session support for ListenBrainz.
@@ -63,10 +61,7 @@
 
 ## 🗺️ Upcoming Features & Future Roadmap
 
-We are committed to making Ananta Dhvani the most advanced, modern, cutting-edge audiophile music application in existence:
-
-- [ ] **Squidify Anime Hub Pipeline:** Full native indexing and streaming integration for Anime OSTs, Openings (OP), and Endings (ED) directly via Squidify.
-- [ ] **Ultra-Premium Master Streaming Tiers:** Pushing native bitrates to the absolute theoretical maximum of source availability, targeting true studio-master quality.
+- [ ] **Ultra-Premium Master Streaming Tiers:** Uncapped bitrate streaming pipeline targeting maximum master-grade acoustic reproduction.
 - [ ] **Advanced Parametric EQ & DSP:** 15+ band parametric equalizer with AutoEQ profile imports, room convolution filters, and binaural crossfeed simulation.
 - [ ] **Modular Provider System:** Encrypted `.lwp` external provider module installer for community-driven backend extensions.
 - [ ] **Gapless DSD / DoP Passthrough:** Native DSD over PCM support for high-end external DAC hardware.
@@ -75,18 +70,17 @@ We are committed to making Ananta Dhvani the most advanced, modern, cutting-edge
 
 ## 🤝 Credits & Acknowledgements
 
-Ananta Dhvani stands on the shoulders of brilliant open-source pioneers:
+LastXWave stands on the shoulders of brilliant open-source pioneers:
 
 * **[LastWave](https://github.com/) & LastWave-Native:** The foundational codebase and architectural inspiration for our core player modules.
 * **Google AndroidX Media3 Team:** For providing the robust `ExoPlayer` media engine infrastructure.
-* **[@kyant/backdrop](https://github.com/Kyant0/backdrop):** For the revolutionary Compose backdrop shader and glassmorphic blur engine.
+* **[@kyant/backdrop](https://github.com/Kyant0/backdrop):** For the Compose backdrop shader and glassmorphic blur engine.
 * **libsoxr Developers:** For the high-grade one-dimensional sample rate conversion library.
 * **LRCLIB:** For the open-source community lyrics database and API.
 * **InnerTube / Piped Project Contributors:** For YouTube Music stream reverse-engineering breakthroughs.
-* **Squidify Project:** For web audio streaming, lossless track extraction tools, and search services.
 
 ---
 
 ## ⚖️ Disclaimer
 
-Ananta Dhvani is an open-source, non-commercial software client developed strictly for personal use, educational research, and audiophile experimentation. All audio streams, album artworks, metadata, and lyrics are the intellectual property of their respective copyright holders, artists, and record labels. This project does not host, store, or distribute copyrighted media files.
+LastXWave is an open-source, non-commercial software client developed strictly for personal use, educational research, and audiophile experimentation. All audio streams, album artworks, metadata, and lyrics are the intellectual property of their respective copyright holders, artists, and record labels. This project does not host, store, or distribute copyrighted media files.

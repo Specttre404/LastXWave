@@ -3866,7 +3866,7 @@ private fun SkeuomorphicCassetteDialog(
                         }
                     }
 
-                    Text("ANANTA DHVANI • HI-BIAS CrO2 90", style = MaterialTheme.typography.labelSmall, color = Color(0xFF00E5FF))
+                    Text("LASTXWAVE • HI-BIAS CrO2 90", style = MaterialTheme.typography.labelSmall, color = Color(0xFF00E5FF))
                 }
             }
 

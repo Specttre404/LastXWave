@@ -146,7 +146,7 @@ class LocalMediaWebServer @Inject constructor(
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Ananta Dhvani Web Remote</title>
+                <title>LastXWave Web Remote</title>
                 <style>
                     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #121216; color: #f0f0f5; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 90vh; }
                     .card { background: #1e1e24; border-radius: 24px; padding: 28px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
@@ -167,9 +167,9 @@ class LocalMediaWebServer @Inject constructor(
             </head>
             <body>
                 <div class="card">
-                    <img id="cover" class="cover" src="/artwork" alt="Artwork" onerror="this.src='https://via.placeholder.com/240/2a2a32/ffffff?text=Ananta+Dhvani'" />
+                    <img id="cover" class="cover" src="/artwork" alt="Artwork" onerror="this.src='https://via.placeholder.com/240/2a2a32/ffffff?text=LastXWave'" />
                     <div id="title" class="title">Loading...</div>
-                    <div id="artist" class="artist">Ananta Dhvani Remote</div>
+                    <div id="artist" class="artist">LastXWave Remote</div>
                     
                     <div class="slider-container">
                         <input type="range" id="seeker" min="0" max="100" value="0" onchange="seek(this.value)">

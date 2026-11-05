@@ -54,7 +54,7 @@ fun MetroPanoramicHub(
             .padding(top = 32.dp, bottom = 24.dp),
     ) {
         Text(
-            text = "ananta dhvani",
+            text = "lastxwave",
             fontSize = 42.sp,
             fontWeight = FontWeight.Light,
             color = Color.White.copy(alpha = 0.85f),

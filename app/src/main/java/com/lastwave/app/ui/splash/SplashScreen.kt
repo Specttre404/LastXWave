@@ -32,7 +32,7 @@ import com.lastwave.app.R
 import com.lastwave.app.ui.common.ExpressiveLoadingIndicator
 
 @Composable
-fun AnantaSplashScreen(
+fun LastXWaveSplashScreen(
     onAnimationFinish: () -> Unit = {},
     onAnimationComplete: () -> Unit = onAnimationFinish,
     modifier: Modifier = Modifier,
@@ -92,7 +92,7 @@ fun SplashScreen(
             }
             Spacer(Modifier.height(18.dp))
             Text(
-                text = "Ananta Dhvani",
+                text = "LastXWave",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontFamily = FontFamily.Serif,
                     fontWeight = FontWeight.ExtraBold,

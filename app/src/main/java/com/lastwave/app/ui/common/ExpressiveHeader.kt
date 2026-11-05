@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun ExpressiveHeader(
-    title: String = "Ananta Dhvani",
+    title: String = "LastXWave",
     subtitle: String? = null,
     onBack: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},

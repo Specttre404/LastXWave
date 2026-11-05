@@ -33,7 +33,7 @@ class WebDavSyncManager @Inject constructor(
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, GCMParameterSpec(128, iv))
             val encrypted = iv + cipher.doFinal(dbBytes)
 
-            val targetUrl = if (serverUrl.endsWith("/")) "${serverUrl}ananta_dhvani_backup.enc" else "$serverUrl/ananta_dhvani_backup.enc"
+            val targetUrl = if (serverUrl.endsWith("/")) "${serverUrl}lastxwave_backup.enc" else "$serverUrl/lastxwave_backup.enc"
             val request = Request.Builder()
                 .url(targetUrl)
                 .addHeader("Authorization", Credentials.basic(user, pass))
@@ -46,7 +46,7 @@ class WebDavSyncManager @Inject constructor(
 
     suspend fun restoreFromWebDav(serverUrl: String, user: String, pass: String, secretKey: String): Boolean = withContext(Dispatchers.IO) {
         runCatching {
-            val targetUrl = if (serverUrl.endsWith("/")) "${serverUrl}ananta_dhvani_backup.enc" else "$serverUrl/ananta_dhvani_backup.enc"
+            val targetUrl = if (serverUrl.endsWith("/")) "${serverUrl}lastxwave_backup.enc" else "$serverUrl/lastxwave_backup.enc"
             val request = Request.Builder()
                 .url(targetUrl)
                 .addHeader("Authorization", Credentials.basic(user, pass))

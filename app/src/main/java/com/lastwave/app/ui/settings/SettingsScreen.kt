@@ -286,7 +286,6 @@ fun SettingsScreen(
     onOpenYouTubeImport: () -> Unit = {},
     onOpenYouTubeLogin: () -> Unit = {},
     onOpenExternalImport: () -> Unit = {},
-    onOpenSquidifyHub: () -> Unit = {},
     playerViewModel: com.lastwave.app.ui.player.PlayerViewModel = hiltViewModel(),
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
@@ -466,7 +465,6 @@ fun SettingsScreen(
                     // Last.fm is optional here — never a gate. Connected:
                     // global scrobbles + stats sync. Disconnected: Stats and
                     // recommendations run local-first from Room.
-                    SquidifyCard(onOpenSquidifyHub = onOpenSquidifyHub)
                     LastFmIntegrationCard(
                         isConnected = isLastFmConnected,
                         username = session.username,
@@ -1429,9 +1427,9 @@ fun SettingsScreen(
                                 iconContainer = MaterialTheme.colorScheme.primaryContainer,
                                 iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
                                 title = stringResource(R.string.settings_source_code),
-                                subtitle = "github.com/Specttre404/AnantaDhvani",
+                                subtitle = "github.com/Specttre404/LastXWave",
                                 onClick = {
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Specttre404/AnantaDhvani"))
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Specttre404/LastXWave"))
                                     if (!startActivitySafely(context, intent)) {
                                         viewModel.showToast("No browser is available")
                                     }
@@ -3871,7 +3869,7 @@ private fun MetroEInkTypographyStudioCard() {
                                     fontWeight = FontWeight.ExtraBold,
                                 )
                                 Text(
-                                    text = if (showDacTelemetryInGlance) "Oboe C++20 • 32-Bit Float / 96 kHz" else "Ananta Dhvani • Active Session",
+                                    text = if (showDacTelemetryInGlance) "Oboe C++20 • 32-Bit Float / 96 kHz" else "LastXWave • Active Session",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = cardFg,
                                 )
@@ -4393,7 +4391,7 @@ private fun AboutCard(versionName: String) {
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_launcher_logo),
-                    contentDescription = "Ananta Dhvani",
+                    contentDescription = "LastXWave",
                     tint = Color.Unspecified,
                     modifier = Modifier.size(72.dp),
                 )
@@ -4412,7 +4410,7 @@ private fun AboutCard(versionName: String) {
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     Text(
-                        text = "Ananta Dhvani",
+                        text = "LastXWave",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -5834,49 +5832,6 @@ private fun LyricsAnimationSheet(
                         )
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun SquidifyCard(
-    onOpenSquidifyHub: () -> Unit = {},
-    modifier: Modifier = Modifier,
-) {
-    val liquidGlass = LocalLiquidGlass.current
-    val shape = RoundedCornerShape(18.dp)
-    Card(
-        onClick = onOpenSquidifyHub,
-        shape = shape,
-        colors = CardDefaults.cardColors(
-            containerColor = liquidGlassContainerColor(MaterialTheme.colorScheme.surfaceContainerHigh),
-        ),
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
-            .liquidGlassChrome(shape, liquidGlass),
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = "🦑",
-                style = MaterialTheme.typography.headlineMedium,
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Text(
-                    text = "Squidify Audio Hub",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
-                Text(
-                    text = "Open web streaming & lossless track downloader",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
             }
         }
     }

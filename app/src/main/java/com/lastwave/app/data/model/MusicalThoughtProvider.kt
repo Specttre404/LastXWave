@@ -13,7 +13,7 @@ object MusicalThoughtProvider {
     val THOUGHTS: List<MusicalThought> = listOf(
         MusicalThought("Music is the silence between the notes.", "Claude Debussy", "Acoustic Philosophy"),
         MusicalThought("Where words fail, music speaks.", "Hans Christian Andersen", "Expressive Purity"),
-        MusicalThought("Soundstage purity reveals the spatial dimension of acoustic vibration.", "Ananta Dhvani", "Audiophile Fidelity"),
+        MusicalThought("Soundstage purity reveals the spatial dimension of acoustic vibration.", "LastXWave", "Audiophile Fidelity"),
         MusicalThought("Dynamic range is the breath and heartbeat of uncompressed sound.", "Acoustic Principles", "Acoustic Fidelity"),
         MusicalThought("Without music, life would be a mistake.", "Friedrich Nietzsche", "Philosophical Thought"),
         MusicalThought("Music produces a kind of pleasure which human nature cannot do without.", "Confucius", "Timeless Vibration"),
@@ -35,7 +35,7 @@ object MusicalThoughtProvider {
         MusicalThought("When the acoustic soundstage opens, the physical walls of the room vanish.", "Listening Artistry", "Soundstage Purity"),
         MusicalThought("Music gives a soul to the universe, wings to the mind, flight to the imagination and life to everything.", "Plato", "Timeless Vibration"),
         MusicalThought("The purity of a harmonic triad is rooted in mathematical resonance.", "Acoustic Science", "Phase Coherence"),
-        MusicalThought("In high resolution audio, silence is as deliberate as sound.", "Ananta Dhvani", "Audiophile Fidelity"),
+        MusicalThought("In high resolution audio, silence is as deliberate as sound.", "LastXWave", "Audiophile Fidelity"),
         MusicalThought("Acoustic vibration connects the listener directly to the artist's original intent.", "Sound Engineering", "Expressive Purity"),
     )
 

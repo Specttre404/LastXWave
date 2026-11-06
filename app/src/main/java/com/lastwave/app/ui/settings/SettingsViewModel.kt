@@ -510,6 +510,12 @@ class SettingsViewModel @Inject constructor(
     fun setDownloadLyrics(enabled: Boolean) = launchSettingsAction("update download lyrics setting") {
         settingsPreferences.setDownloadLyrics(enabled)
     }
+    fun setLrcRedEnabled(enabled: Boolean) = launchSettingsAction("update LRC.red enabled") {
+        settingsPreferences.setLrcRedEnabled(enabled)
+    }
+    fun setLyricsSourceMode(mode: com.lastwave.app.data.local.LyricsSourceMode) = launchSettingsAction("update lyrics source mode") {
+        settingsPreferences.setLyricsSourceMode(mode)
+    }
 
     /** Persists + applies; AppLocaleManager owns error handling and threading. */
     fun setAppLanguage(language: AppLanguage) {

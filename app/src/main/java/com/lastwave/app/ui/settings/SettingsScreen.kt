@@ -1262,9 +1262,52 @@ fun SettingsScreen(
 
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    SectionLabel(stringResource(R.string.settings_section_integrations))
-                    SettingsGroup(rowCount = 2) { index, position ->
-                        when (index) {
+                    SectionLabel("LRC.red Synchronized Lyrics Engine")
+                    Card(
+                        shape = CardOuterShape,
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    ) {
+                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            SettingsToggleCard(
+                                icon = Icons.Filled.Lyrics,
+                                iconContainer = MaterialTheme.colorScheme.tertiaryContainer,
+                                iconTint = MaterialTheme.colorScheme.onTertiaryContainer,
+                                title = "LRC.red Provider",
+                                subtitle = "Fallback and dedicated synchronized lyrics provider from lrc.red",
+                                checked = misc.lrcRedEnabled,
+                                onCheckedChange = viewModel::setLrcRedEnabled,
+                            )
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                "Lyrics Source Mode",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                            com.lastwave.app.data.local.LyricsSourceMode.entries.forEach { mode ->
+                                val selected = mode == misc.lyricsSourceMode
+                                Surface(
+                                    onClick = { viewModel.setLyricsSourceMode(mode) },
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        RadioButton(
+                                            selected = selected,
+                                            onClick = { viewModel.setLyricsSourceMode(mode) },
+                                        )
+                                        Spacer(Modifier.width(10.dp))
+                                        Column(Modifier.weight(1f)) {
+                                            Text(mode.title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                                            Text(mode.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

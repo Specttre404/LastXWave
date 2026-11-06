@@ -132,6 +132,16 @@ enum class LyricsAnimation(val id: String, val title: String, val description: S
     }
 }
 
+enum class LyricsSourceMode(val id: String, val title: String, val description: String) {
+    AUTO_FALLBACK("auto_fallback", "Dual-Source Fallback", "Query LRCLIB first, then fallback to LRC.red automatically."),
+    LRCLIB_ONLY("lrclib_only", "LRCLIB Only", "Query https://lrclib.net only."),
+    LRC_RED_ONLY("lrc_red_only", "LRC.red Only", "Query https://lrc.red only.");
+
+    companion object {
+        fun fromId(id: String?): LyricsSourceMode = entries.firstOrNull { it.id == id } ?: AUTO_FALLBACK
+    }
+}
+
 data class MiscSettings(
     /** When on, the app's accent color follows the dominant color of the
      *  currently-scrobbling track's artwork (Home's "now playing" track),
@@ -251,6 +261,9 @@ data class MiscSettings(
     val minSilenceDurationMs: Long = 250L,
     /** Incognito / Private listening session. */
     val isIncognitoMode: Boolean = false,
+    /** LRC.red synchronized lyrics provider preferences. */
+    val lrcRedEnabled: Boolean = true,
+    val lyricsSourceMode: LyricsSourceMode = LyricsSourceMode.AUTO_FALLBACK,
     /** Convolution IR wet level (0.0f to 1.0f). */
     val convolutionWetLevel: Float = 0.35f,
     /** InnerTube spoofing client name. */
@@ -373,6 +386,8 @@ class SettingsPreferences @Inject constructor(
         val SHOW_LYRICS_TRANSLATION = booleanPreferencesKey("lw_show_lyrics_translation")
         val SHOW_LYRICS_PHONETIC = booleanPreferencesKey("lw_show_lyrics_phonetic")
         val LYRICS_ANIMATION = stringPreferencesKey("lw_lyrics_animation")
+        val LRC_RED_ENABLED = booleanPreferencesKey("lw_lrc_red_enabled")
+        val LYRICS_SOURCE_MODE = stringPreferencesKey("lw_lyrics_source_mode")
         val CROSSFADE_ENABLED = booleanPreferencesKey("lw_crossfade_enabled")
         val CROSSFADE_SECONDS = intPreferencesKey("lw_crossfade_seconds")
         val SKIP_SILENCE_ENABLED = booleanPreferencesKey("lw_skip_silence_enabled")
@@ -502,6 +517,8 @@ class SettingsPreferences @Inject constructor(
                 silenceThresholdDb = (p.readSafely(Keys.SILENCE_THRESHOLD_DB) ?: -42.0f).coerceIn(-60.0f, -25.0f),
                 minSilenceDurationMs = (p.readSafely(Keys.MIN_SILENCE_DURATION_MS) ?: 250L).coerceIn(50L, 1500L),
                 isIncognitoMode = p.readSafely(Keys.IS_INCOGNITO_MODE) ?: false,
+                lrcRedEnabled = p.readSafely(Keys.LRC_RED_ENABLED) ?: true,
+                lyricsSourceMode = LyricsSourceMode.fromId(p.readSafely(Keys.LYRICS_SOURCE_MODE)),
                 convolutionWetLevel = (p.readSafely(Keys.CONVOLUTION_WET_LEVEL) ?: 0.35f).coerceIn(0.0f, 1.0f),
                 innerTubeClientName = p.readSafely(Keys.INNERTUBE_CLIENT_NAME) ?: "ANDROID_VR",
                 dohProviderName = p.readSafely(Keys.DOH_PROVIDER_NAME) ?: "System",
@@ -898,6 +915,14 @@ class SettingsPreferences @Inject constructor(
 
     suspend fun setMetroHubEnabled(enabled: Boolean) {
         dataStore.edit { it[Keys.METRO_HUB_ENABLED] = enabled }
+    }
+
+    suspend fun setLrcRedEnabled(enabled: Boolean) {
+        dataStore.edit { it[Keys.LRC_RED_ENABLED] = enabled }
+    }
+
+    suspend fun setLyricsSourceMode(mode: LyricsSourceMode) {
+        dataStore.edit { it[Keys.LYRICS_SOURCE_MODE] = mode.id }
     }
 
     suspend fun setCrossfeedPreset(preset: String) {

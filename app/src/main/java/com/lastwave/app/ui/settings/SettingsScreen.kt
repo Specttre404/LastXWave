@@ -1262,7 +1262,7 @@ fun SettingsScreen(
 
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    SectionLabel("LRC.red Synchronized Lyrics Engine")
+                    SectionLabel("Synchronized Lyrics Providers")
                     Card(
                         shape = CardOuterShape,
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
@@ -1273,9 +1273,18 @@ fun SettingsScreen(
                                 iconContainer = MaterialTheme.colorScheme.tertiaryContainer,
                                 iconTint = MaterialTheme.colorScheme.onTertiaryContainer,
                                 title = "LRC.red Provider",
-                                subtitle = "Fallback and dedicated synchronized lyrics provider from lrc.red",
+                                subtitle = "Synchronized lyrics fallback provider from lrc.red",
                                 checked = misc.lrcRedEnabled,
                                 onCheckedChange = viewModel::setLrcRedEnabled,
+                            )
+                            SettingsToggleCard(
+                                icon = Icons.Filled.Lyrics,
+                                iconContainer = MaterialTheme.colorScheme.secondaryContainer,
+                                iconTint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                title = "SyncLRC Provider",
+                                subtitle = "High-accuracy synchronized lyrics provider from synclrc.dev",
+                                checked = misc.syncLrcEnabled,
+                                onCheckedChange = viewModel::setSyncLrcEnabled,
                             )
                             Spacer(Modifier.height(4.dp))
                             Text(

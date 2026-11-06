@@ -513,6 +513,9 @@ class SettingsViewModel @Inject constructor(
     fun setLrcRedEnabled(enabled: Boolean) = launchSettingsAction("update LRC.red enabled") {
         settingsPreferences.setLrcRedEnabled(enabled)
     }
+    fun setSyncLrcEnabled(enabled: Boolean) = launchSettingsAction("update SyncLRC enabled") {
+        settingsPreferences.setSyncLrcEnabled(enabled)
+    }
     fun setLyricsSourceMode(mode: com.lastwave.app.data.local.LyricsSourceMode) = launchSettingsAction("update lyrics source mode") {
         settingsPreferences.setLyricsSourceMode(mode)
     }

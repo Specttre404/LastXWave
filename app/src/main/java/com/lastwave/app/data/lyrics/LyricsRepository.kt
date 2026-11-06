@@ -75,6 +75,7 @@ class LyricsRepository @Inject constructor(
     private val kugouApi: KugouLyricsApi,
     private val lrclibApi: LrclibLyricsApi,
     private val lrcRedProvider: LrcRedLyricsProvider,
+    private val syncLrcProvider: SyncLrcLyricsProvider,
     private val musixmatchScraper: dagger.Lazy<MusixmatchScraper>,
     private val downloadedTrackDao: dagger.Lazy<com.lastwave.app.data.local.db.DownloadedTrackDao>,
 ) {
@@ -387,6 +388,57 @@ class LyricsRepository @Inject constructor(
             }
         }
 
+        // 4. TERTIARY FALLBACK: Query SyncLRC (synclrc.dev)
+        val syncLrcData = runCatching {
+            syncLrcProvider.getLyrics(title, artist, album, durationSeconds).getOrNull()
+        }.getOrNull()
+
+        if (syncLrcData != null) {
+            if (syncLrcData.isInstrumental) {
+                val result = LyricsResult.Success(
+                    lines = emptyList(),
+                    isSynced = false,
+                    isWordSynced = false,
+                    plainLyrics = null,
+                    isInstrumental = true,
+                    source = "SyncLRC (Instrumental)",
+                )
+                cache[cacheKey] = result
+                return@withContext result
+            }
+
+            val synced = syncLrcData.syncedLyrics
+            if (!synced.isNullOrBlank()) {
+                val lines = parseLrc(synced)
+                if (lines.isNotEmpty()) {
+                    val result = LyricsResult.Success(
+                        lines = lines,
+                        isSynced = true,
+                        isWordSynced = false,
+                        plainLyrics = syncLrcData.plainLyrics,
+                        isInstrumental = false,
+                        source = "SyncLRC (Line-Sync)",
+                    )
+                    cache[cacheKey] = result
+                    return@withContext result
+                }
+            }
+
+            val plain = syncLrcData.plainLyrics
+            if (!plain.isNullOrBlank()) {
+                val result = LyricsResult.Success(
+                    lines = emptyList(),
+                    isSynced = false,
+                    isWordSynced = false,
+                    plainLyrics = plain.trim(),
+                    isInstrumental = false,
+                    source = "SyncLRC (Plain)",
+                )
+                cache[cacheKey] = result
+                return@withContext result
+            }
+        }
+
         if (lrclibRecord != null && !lrclibRecord.plainLyrics.isNullOrBlank()) {
             val result = LyricsResult.Success(
                 lines = emptyList(),
@@ -400,7 +452,7 @@ class LyricsRepository @Inject constructor(
             return@withContext result
         }
 
-        // 4. FALLBACK: If all fail, return Empty (no lyrics)
+        // 5. FALLBACK: If all fail, return Empty (no lyrics)
         LyricsResult.Empty
     }
 

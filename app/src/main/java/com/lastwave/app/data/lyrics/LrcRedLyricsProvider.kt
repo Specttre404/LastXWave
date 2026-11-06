@@ -2,13 +2,12 @@ package com.lastwave.app.data.lyrics
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.IOException
+import org.json.JSONArray
+import org.json.JSONObject
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,33 +15,94 @@ data class LyricsData(
     val syncedLyrics: String? = null,
     val plainLyrics: String? = null,
     val isInstrumental: Boolean = false,
-    val source: String = "LRC.red"
+    val source: String = "lrc.red"
 )
 
-@Serializable
-private data class LrcRedRecord(
-    val id: String? = null,
-    val title: String? = null,
-    @SerialName("track_name") val trackName: String? = null,
-    val artist: String? = null,
-    @SerialName("artist_name") val artistName: String? = null,
-    val album: String? = null,
-    @SerialName("album_name") val albumName: String? = null,
-    val duration: Double? = null,
-    val instrumental: Boolean? = false,
-    @SerialName("plain_lyrics") val plainLyrics: String? = null,
-    @SerialName("plainLyrics") val plainLyricsAlt: String? = null,
-    @SerialName("synced_lyrics") val syncedLyrics: String? = null,
-    @SerialName("syncedLyrics") val syncedLyricsAlt: String? = null,
+data class SyncedLyricsResult(
+    val id: String?,
+    val trackName: String,
+    val artistName: String,
+    val albumName: String?,
+    val durationSeconds: Int,
+    val syncedLyrics: String?,
+    val plainLyrics: String?,
+    val isInstrumental: Boolean = false,
+    val source: String = "lrc.red"
 )
 
 @Singleton
 class LrcRedLyricsProvider @Inject constructor(
-    private val okHttpClient: OkHttpClient,
+    private val okHttpClient: OkHttpClient
 ) {
-    private val json = Json {
-        ignoreUnknownKeys = true
-        isLenient = true
+    private val client: OkHttpClient by lazy {
+        okHttpClient.newBuilder()
+            .connectTimeout(6, TimeUnit.SECONDS)
+            .readTimeout(6, TimeUnit.SECONDS)
+            .build()
+    }
+
+    suspend fun fetchLyrics(
+        trackTitle: String,
+        artistName: String,
+        albumName: String? = null,
+        durationSeconds: Int = 0
+    ): Result<SyncedLyricsResult> = withContext(Dispatchers.IO) {
+        try {
+            val sanitizedTitle = cleanMetadata(trackTitle)
+            val sanitizedArtist = cleanMetadata(artistName)
+
+            val urlBuilder = "https://lrc.red/api/lyrics".toHttpUrlOrNull()?.newBuilder()
+                ?: return@withContext Result.failure(IllegalArgumentException("Invalid base URL"))
+
+            urlBuilder.addQueryParameter("title", sanitizedTitle)
+            urlBuilder.addQueryParameter("track_name", sanitizedTitle)
+            urlBuilder.addQueryParameter("artist", sanitizedArtist)
+            urlBuilder.addQueryParameter("artist_name", sanitizedArtist)
+            if (!albumName.isNullOrBlank()) {
+                val cleanAlbum = cleanMetadata(albumName)
+                urlBuilder.addQueryParameter("album", cleanAlbum)
+                urlBuilder.addQueryParameter("album_name", cleanAlbum)
+            }
+            if (durationSeconds > 0) {
+                urlBuilder.addQueryParameter("duration", durationSeconds.toString())
+            }
+
+            val request = Request.Builder()
+                .url(urlBuilder.build())
+                .header("User-Agent", "LastXWave/1.7.0 (contact@lastwave.app)")
+                .header("Accept", "application/json")
+                .get()
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    return@withContext searchFallback(sanitizedTitle, sanitizedArtist)
+                }
+
+                val body = response.body?.string() ?: return@withContext Result.failure(Exception("Empty body"))
+                val json = JSONObject(body)
+
+                val synced = json.optString("syncedLyrics").ifBlank { json.optString("synced_lyrics") }.takeIf { it.isNotBlank() }
+                val plain = json.optString("plainLyrics").ifBlank { json.optString("plain_lyrics") }.takeIf { it.isNotBlank() }
+                val instrumental = json.optBoolean("instrumental", false)
+
+                Result.success(
+                    SyncedLyricsResult(
+                        id = json.optString("id"),
+                        trackName = json.optString("title", json.optString("track_name", sanitizedTitle)),
+                        artistName = json.optString("artist", json.optString("artist_name", sanitizedArtist)),
+                        albumName = json.optString("album", json.optString("album_name", albumName.orEmpty())),
+                        durationSeconds = json.optInt("duration", durationSeconds),
+                        syncedLyrics = synced,
+                        plainLyrics = plain,
+                        isInstrumental = instrumental,
+                        source = "lrc.red"
+                    )
+                )
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     suspend fun getLyrics(
@@ -50,110 +110,61 @@ class LrcRedLyricsProvider @Inject constructor(
         artist: String,
         album: String? = null,
         durationSeconds: Int? = null,
-    ): Result<LyricsData> = withContext(Dispatchers.IO) {
-        runCatching {
-            if (title.isBlank() || artist.isBlank()) {
-                throw IllegalArgumentException("Title and artist cannot be empty")
-            }
-
-            // 1. Try exact endpoint: https://lrc.red/api/lyrics
-            val exactRecord = fetchExactLyrics(title, artist, album, durationSeconds)
-            if (exactRecord != null) {
-                val synced = exactRecord.syncedLyrics ?: exactRecord.syncedLyricsAlt
-                val plain = exactRecord.plainLyrics ?: exactRecord.plainLyricsAlt
-                val isInst = exactRecord.instrumental ?: false
-
-                if (!synced.isNullOrBlank() || !plain.isNullOrBlank() || isInst) {
-                    return@runCatching LyricsData(
-                        syncedLyrics = synced,
-                        plainLyrics = plain,
-                        isInstrumental = isInst,
-                        source = "LRC.red"
-                    )
-                }
-            }
-
-            // 2. Fallback search endpoint: https://lrc.red/api/search
-            val searchRecord = fetchSearchLyrics(title, artist, durationSeconds)
-            if (searchRecord != null) {
-                val synced = searchRecord.syncedLyrics ?: searchRecord.syncedLyricsAlt
-                val plain = searchRecord.plainLyrics ?: searchRecord.plainLyricsAlt
-                val isInst = searchRecord.instrumental ?: false
-
-                if (!synced.isNullOrBlank() || !plain.isNullOrBlank() || isInst) {
-                    return@runCatching LyricsData(
-                        syncedLyrics = synced,
-                        plainLyrics = plain,
-                        isInstrumental = isInst,
-                        source = "LRC.red"
-                    )
-                }
-            }
-
-            throw IOException("No lyrics found on LRC.red for $artist - $title")
+    ): Result<LyricsData> {
+        val res = fetchLyrics(title, artist, album, durationSeconds ?: 0)
+        return res.map {
+            LyricsData(
+                syncedLyrics = it.syncedLyrics,
+                plainLyrics = it.plainLyrics,
+                isInstrumental = it.isInstrumental,
+                source = it.source
+            )
         }
     }
 
-    private fun fetchExactLyrics(
-        title: String,
-        artist: String,
-        album: String?,
-        durationSeconds: Int?,
-    ): LrcRedRecord? {
-        val urlBuilder = "https://lrc.red/api/lyrics".toHttpUrlOrNull()?.newBuilder() ?: return null
-        urlBuilder.addQueryParameter("track_name", title)
-        urlBuilder.addQueryParameter("artist_name", artist)
-        if (!album.isNullOrBlank()) {
-            urlBuilder.addQueryParameter("album_name", album)
-        }
-        if (durationSeconds != null && durationSeconds > 0) {
-            urlBuilder.addQueryParameter("duration", durationSeconds.toString())
-        }
+    private fun searchFallback(title: String, artist: String): Result<SyncedLyricsResult> {
+        val searchUrl = "https://lrc.red/api/search".toHttpUrlOrNull()?.newBuilder()
+            ?.addQueryParameter("q", "$artist $title")
+            ?.addQueryParameter("track_name", title)
+            ?.addQueryParameter("artist_name", artist)
+            ?.build() ?: return Result.failure(Exception("Failed to build search URL"))
 
         val request = Request.Builder()
-            .url(urlBuilder.build())
-            .header("User-Agent", "LastXWave-Android/1.0")
+            .url(searchUrl)
+            .header("User-Agent", "LastXWave/1.7.0")
+            .get()
             .build()
 
         return try {
-            val response = okHttpClient.newCall(request).execute()
-            if (!response.isSuccessful) return null
-            val bodyString = response.body?.string() ?: return null
-            if (bodyString.isBlank()) return null
-            json.decodeFromString<LrcRedRecord>(bodyString)
-        } catch (_: Exception) {
-            null
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) return Result.failure(Exception("Search failed with code ${response.code}"))
+                val text = response.body?.string() ?: return Result.failure(Exception("Empty response"))
+                val array = JSONArray(text)
+                if (array.length() == 0) return Result.failure(Exception("No results found on lrc.red"))
+
+                val bestMatch = array.getJSONObject(0)
+                Result.success(
+                    SyncedLyricsResult(
+                        id = bestMatch.optString("id"),
+                        trackName = bestMatch.optString("title", bestMatch.optString("track_name", title)),
+                        artistName = bestMatch.optString("artist", bestMatch.optString("artist_name", artist)),
+                        albumName = bestMatch.optString("album", bestMatch.optString("album_name")),
+                        durationSeconds = bestMatch.optInt("duration", 0),
+                        syncedLyrics = bestMatch.optString("syncedLyrics").ifBlank { bestMatch.optString("synced_lyrics") }.takeIf { it.isNotBlank() },
+                        plainLyrics = bestMatch.optString("plainLyrics").ifBlank { bestMatch.optString("plain_lyrics") }.takeIf { it.isNotBlank() },
+                        isInstrumental = bestMatch.optBoolean("instrumental", false),
+                        source = "lrc.red"
+                    )
+                )
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
-    private fun fetchSearchLyrics(
-        title: String,
-        artist: String,
-        durationSeconds: Int?,
-    ): LrcRedRecord? {
-        val urlBuilder = "https://lrc.red/api/search".toHttpUrlOrNull()?.newBuilder() ?: return null
-        urlBuilder.addQueryParameter("track_name", title)
-        urlBuilder.addQueryParameter("artist_name", artist)
-        if (durationSeconds != null && durationSeconds > 0) {
-            urlBuilder.addQueryParameter("duration", durationSeconds.toString())
-        }
-
-        val request = Request.Builder()
-            .url(urlBuilder.build())
-            .header("User-Agent", "LastXWave-Android/1.0")
-            .build()
-
-        return try {
-            val response = okHttpClient.newCall(request).execute()
-            if (!response.isSuccessful) return null
-            val bodyString = response.body?.string() ?: return null
-            if (bodyString.isBlank()) return null
-            val list = json.decodeFromString<List<LrcRedRecord>>(bodyString)
-            list.firstOrNull {
-                !it.syncedLyrics.isNullOrBlank() || !it.syncedLyricsAlt.isNullOrBlank() || !it.plainLyrics.isNullOrBlank()
-            }
-        } catch (_: Exception) {
-            null
-        }
+    private fun cleanMetadata(value: String): String {
+        return value
+            .replace(Regex("""\s*[\(\[\{].*?(feat|ft|official|audio|video|remastered|version|bonus|deluxe).*?[\)\]\}]""", RegexOption.IGNORE_CASE), "")
+            .trim()
     }
 }

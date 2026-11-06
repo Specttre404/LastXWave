@@ -1,36 +1,50 @@
-name: Build Release Artifacts
+name: Build LastXWave Release APK
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
+    name: Assemble Release APK
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
-          cache: 'gradle'
+          java-version: '21'
 
-      - name: Grant Execute Permission to Gradlew
-        run: chmod +x gradlew
+      - name: Setup Android SDK & NDK
+        uses: android-actions/setup-android@v3
 
-      - name: Compile & Run Unit Tests
-        run: ./gradlew app:testDebugUnitTest
+      - name: Accept Android SDK & NDK Licenses
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "ndk;28.2.13676358" "cmake;3.22.1"
 
-      - name: Assemble Release APK
-        run: ./gradlew app:assembleRelease
+      - name: Grant Execute Permission for Gradlew
+        run: chmod +x ./gradlew
 
-      - name: Upload Release Binary Artifact
+      - name: Build Release APK
+        run: ./gradlew app:assembleRelease --stacktrace --no-daemon
+
+      - name: Upload Release APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: app/build/outputs/apk/release/app-release.apk
+          name: LastXWave-Release
+          path: app/build/outputs/apk/release/*.apk
+          retention-days: 14

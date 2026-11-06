@@ -88,6 +88,14 @@ fun AudioRecognitionSheet(
     var isRecording by remember { mutableStateOf(false) }
     var recognizedSong by remember { mutableStateOf<RecognizedSong?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var recordingJob by remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
+
+    fun stopAndDismiss() {
+        recordingJob?.cancel()
+        recordingJob = null
+        isRecording = false
+        onDismiss()
+    }
 
     fun startListening() {
         if (isRecording) return
@@ -95,7 +103,7 @@ fun AudioRecognitionSheet(
         errorMessage = null
         recognizedSong = null
 
-        scope.launch {
+        recordingJob = scope.launch {
             val result = recognitionManager.recognizeAudio()
             isRecording = false
             result.onSuccess { song ->
@@ -125,7 +133,7 @@ fun AudioRecognitionSheet(
     }
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = ::stopAndDismiss,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
@@ -147,7 +155,7 @@ fun AudioRecognitionSheet(
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                 )
-                IconButton(onClick = onDismiss) {
+                IconButton(onClick = ::stopAndDismiss) {
                     Icon(Icons.Filled.Close, contentDescription = "Close")
                 }
             }

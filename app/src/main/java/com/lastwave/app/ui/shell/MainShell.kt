@@ -215,51 +215,36 @@ private fun FloatingNavBar(
     modifier: Modifier = Modifier,
 ) {
     val liquidGlass = LocalLiquidGlass.current
-    val effectiveDockShape = if (liquidGlass) DockShape else CircleShape
-    val navBarHeight = if (liquidGlass) 60.dp else 56.dp
-    val navHorizontalPadding = if (liquidGlass) 8.dp else 10.dp
 
-    Box(
+    Surface(
+        shape = androidx.compose.ui.graphics.RectangleShape,
+        color = if (liquidGlass) MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.92f)
+                else MaterialTheme.colorScheme.surfaceContainerHighest,
+        tonalElevation = 8.dp,
         modifier = modifier
-            .windowInsetsPadding(
-                WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
-            )
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-            .animateContentSize(animationSpec = navSpring()),
-        contentAlignment = Alignment.Center,
+            .fillMaxWidth()
+            .liquidGlassChrome(androidx.compose.ui.graphics.RectangleShape, liquidGlass, LiquidGlassPreset.BottomNavigation, backdrop),
     ) {
         Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
+                )
+                .height(64.dp)
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
         ) {
-            Surface(
-                shape = effectiveDockShape,
-                color = if (liquidGlass) MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.80f)
-                        else MaterialTheme.colorScheme.surfaceContainerHighest,
-                border = if (liquidGlass) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
-                tonalElevation = if (liquidGlass) 0.dp else 6.dp,
-                shadowElevation = if (liquidGlass) 0.dp else 8.dp,
-                modifier = Modifier
-                    .height(navBarHeight)
-                    .clip(effectiveDockShape)
-                    .liquidGlassChrome(effectiveDockShape, liquidGlass, LiquidGlassPreset.BottomNavigation, backdrop),
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = navHorizontalPadding, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    tabs.forEachIndexed { index, tab ->
-                        val onClick = remember(index) { { onSelect(index) } }
-                        FloatingNavItem(
-                            label = androidx.compose.ui.res.stringResource(tab.labelRes),
-                            icon = tab.icon(),
-                            selected = selectedIndex == index,
-                            isPlaying = selectedIndex == index && isPlaying,
-                            onClick = onClick,
-                        )
-                    }
-                }
+            tabs.forEachIndexed { index, tab ->
+                val onClick = remember(index) { { onSelect(index) } }
+                FloatingNavItem(
+                    label = androidx.compose.ui.res.stringResource(tab.labelRes),
+                    icon = tab.icon(),
+                    selected = selectedIndex == index,
+                    isPlaying = selectedIndex == index && isPlaying,
+                    onClick = onClick,
+                )
             }
         }
     }

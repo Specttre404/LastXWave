@@ -594,10 +594,10 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setAudiophilePalette(paletteName: String) = launchSettingsAction("update palette") {
-        val theme = com.lastwave.app.ui.theme.AudiophilePalettes.ALL_THEMES.firstOrNull {
+        val accent = com.lastwave.app.ui.theme.AppAccent.ALL_ACCENTS.firstOrNull {
             it.name.contains(paletteName, ignoreCase = true)
-        } ?: com.lastwave.app.ui.theme.AudiophilePalettes.DYNAMIC_MONET
-        setManualAccent(theme.primaryColor)
+        } ?: com.lastwave.app.ui.theme.AppAccent.LiquidGlass
+        setManualAccent(accent.primary)
     }
 
     fun restoreFromWebDav(serverUrl: String, user: String, pass: String, secretKey: String) = launchSettingsAction("WebDAV restore") {

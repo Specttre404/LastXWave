@@ -63,6 +63,7 @@ fun WavySeekBar(
     showTimeLabels: Boolean = true,
     seekbarStyle: SeekbarStyle = SeekbarStyle.WAVY_FLUID,
     ambientColor: Color? = null,
+    liquidGlass: Boolean = false,
 ) {
     val interactionSource = remember(trackKey) { MutableInteractionSource() }
     val dragging by interactionSource.collectIsDraggedAsState()

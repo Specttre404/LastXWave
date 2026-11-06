@@ -600,7 +600,7 @@ fun SearchScreen(
     }
 
     if (isListeningAudio) {
-        SongRecognizerDialog(onDismiss = { /* cancel listening */ })
+        SongRecognizerDialog(onDismiss = viewModel::stopAudioRecognition)
     }
 
     if (recognitionError != null) {

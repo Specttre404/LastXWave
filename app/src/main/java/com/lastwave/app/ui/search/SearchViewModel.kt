@@ -53,12 +53,14 @@ class SearchViewModel @Inject constructor(
     private val _recognitionError = MutableStateFlow<String?>(null)
     val recognitionError: StateFlow<String?> = _recognitionError.asStateFlow()
 
+    private var recognitionJob: Job? = null
+
     fun startAudioRecognition() {
         if (_isListeningAudio.value) return
         _isListeningAudio.value = true
         _recognitionError.value = null
 
-        viewModelScope.launch {
+        recognitionJob = viewModelScope.launch {
             val result = audioRecognitionManager.recognizeAudio()
             _isListeningAudio.value = false
             result.onSuccess { song ->
@@ -67,6 +69,13 @@ class SearchViewModel @Inject constructor(
                 _recognitionError.value = error.message ?: "Failed to recognize audio"
             }
         }
+    }
+
+    fun stopAudioRecognition() {
+        recognitionJob?.cancel()
+        recognitionJob = null
+        _isListeningAudio.value = false
+        _recognitionError.value = null
     }
 
     fun dismissRecognitionError() {

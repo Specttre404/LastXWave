@@ -488,22 +488,7 @@ fun SettingsScreen(
                 }
             }
 
-            item {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    SectionLabel(stringResource(R.string.settings_section_language))
-                    SettingsGroup(rowCount = 1) { _, position ->
-                        SettingsActionCard(
-                            icon = Icons.Filled.Language,
-                            iconContainer = MaterialTheme.colorScheme.primaryContainer,
-                            iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            title = stringResource(R.string.settings_language_title),
-                            subtitle = currentLanguage.nativeDisplayName(),
-                            onClick = { showLanguageDialog = true },
-                            position = position,
-                        )
-                    }
-                }
-            }
+
 
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -706,7 +691,7 @@ fun SettingsScreen(
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     SectionLabel(stringResource(R.string.settings_section_appearance))
-                    SettingsGroup(rowCount = 9) { index, position ->
+                    SettingsGroup(rowCount = 7) { index, position ->
                         when (index) {
                             0 -> ThemeModeSelectorCard(
                                 currentThemeMode = theme.themeMode,
@@ -783,42 +768,12 @@ fun SettingsScreen(
                                 },
                                 position = position,
                             )
-                            7 -> SettingsToggleCard(
-                                icon = Icons.Filled.TextFields,
-                                iconContainer = MaterialTheme.colorScheme.secondaryContainer,
-                                iconTint = MaterialTheme.colorScheme.onSecondaryContainer,
-                                title = stringResource(R.string.settings_app_font),
-                                subtitle = stringResource(R.string.settings_app_font_sub),
-                                checked = misc.useCustomFont,
-                                onCheckedChange = viewModel::setUseCustomFont,
-                                position = position,
-                            )
-
                         }
                     }
                 }
             }
 
-            item {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    SectionLabel(stringResource(R.string.settings_section_accent))
-                    Card(
-                        shape = CardOuterShape,
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                    ) {
-                        Column(Modifier.padding(20.dp)) {
-                            AccentPresetGrid(
-                                currentMode = theme.mode,
-                                selectedHex = theme.accentColorHex,
-                                onPickDynamic = { viewModel.setAccentMode(AccentMode.DYNAMIC) },
-                                onPickPreset = { hex -> viewModel.setManualAccent(Color(android.graphics.Color.parseColor(hex))) },
-                                onPickMono = { viewModel.setAccentMode(AccentMode.MONOCHROME) },
-                                onPickCustom = viewModel::openColorWheel,
-                            )
-                        }
-                    }
-                }
-            }
+
 
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -840,11 +795,7 @@ fun SettingsScreen(
                                 iconContainer = MaterialTheme.colorScheme.tertiaryContainer,
                                 iconTint = MaterialTheme.colorScheme.onTertiaryContainer,
                                 title = stringResource(R.string.settings_lyrics_animation),
-                                subtitle = if (misc.lyricsUiVersion == LyricsUiVersion.MODERN) {
-                                    "New UI (Modern)"
-                                } else {
-                                    "${misc.lyricsAnimation.title} \u2022 ${misc.lyricsAnimation.description}"
-                                },
+                                subtitle = "${misc.lyricsAnimation.title} \u2022 ${misc.lyricsAnimation.description}",
                                 onClick = { showLyricsAnimationSheet = true },
                                 position = position,
                             )
@@ -1539,89 +1490,7 @@ fun SettingsScreen(
         )
     }
 
-    // -- App language picker (Settings -> Language) --
-    if (showLanguageDialog) {
-        val liquidGlass = LocalLiquidGlass.current
-        val dialogShape = RoundedCornerShape(28.dp)
-        AlertDialog(
-            onDismissRequest = { showLanguageDialog = false },
-            modifier = Modifier.liquidGlassChrome(dialogShape, liquidGlass),
-            shape = dialogShape,
-            containerColor = liquidGlassContainerColor(MaterialTheme.colorScheme.surfaceContainerHigh),
-            title = { Text(stringResource(R.string.settings_language_dialog_title), fontWeight = FontWeight.Bold) },
-            text = {
-                Column(
-                    modifier = Modifier.verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    AppLanguage.SELECTABLE.forEach { language ->
-                        val selected = language == currentLanguage
-                        val itemShape = RoundedCornerShape(16.dp)
-                        val itemColor = if (liquidGlass) {
-                            if (selected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f) else Color.Transparent
-                        } else {
-                            if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainer
-                        }
-                        Surface(
-                            onClick = {
-                                viewModel.setAppLanguage(language)
-                                showLanguageDialog = false
-                            },
-                            shape = itemShape,
-                            color = itemColor,
-                            border = if (selected) BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary) else null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .liquidGlassChrome(itemShape, liquidGlass && selected),
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 12.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                RadioButton(
-                                    selected = selected,
-                                    onClick = {
-                                        viewModel.setAppLanguage(language)
-                                        showLanguageDialog = false
-                                    },
-                                )
-                                Spacer(Modifier.width(10.dp))
-                                Column(Modifier.weight(1f)) {
-                                    Text(
-                                        language.nativeDisplayName(),
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                                    )
-                                    if (language == AppLanguage.SYSTEM) {
-                                        Text(
-                                            stringResource(R.string.settings_language_system_sub),
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        )
-                                    }
-                                }
-                                if (selected) {
-                                    Icon(
-                                        Icons.Filled.Check,
-                                        contentDescription = stringResource(R.string.common_selected),
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(18.dp),
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showLanguageDialog = false }) {
-                    Text(stringResource(R.string.common_done))
-                }
-            },
-        )
-    }
+
 
     // -- Enable Scrobbling password dialog --
     if (state.showSessionKeyDialog) {
@@ -1855,14 +1724,12 @@ fun SettingsScreen(
     // -- Experimental Lyrics Animation Sheet --
     if (showLyricsAnimationSheet) {
         LyricsAnimationSheet(
-            version = misc.lyricsUiVersion,
             wordByWord = misc.wordByWordLyrics,
             onWordByWordChange = viewModel::setWordByWordLyrics,
             showTranslation = misc.showLyricsTranslation,
             onShowTranslationChange = viewModel::setShowLyricsTranslation,
             showPhonetic = misc.showLyricsPhonetic,
             onShowPhoneticChange = viewModel::setShowLyricsPhonetic,
-            onSelectVersion = viewModel::setLyricsUiVersion,
             current = misc.lyricsAnimation,
             onSelect = {
                 viewModel.setLyricsAnimation(it)
@@ -5586,8 +5453,6 @@ private fun LyricsAnimationSheet(
     onShowTranslationChange: (Boolean) -> Unit,
     showPhonetic: Boolean,
     onShowPhoneticChange: (Boolean) -> Unit,
-    version: LyricsUiVersion,
-    onSelectVersion: (LyricsUiVersion) -> Unit,
     current: LyricsAnimation,
     onSelect: (LyricsAnimation) -> Unit,
     onDismiss: () -> Unit,
@@ -5683,155 +5548,79 @@ private fun LyricsAnimationSheet(
                 onCheckedChange = onShowPhoneticChange,
             )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 440.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                val versions = listOf(
-                    LyricsUiVersion.CLASSIC to "Classic",
-                    LyricsUiVersion.MODERN to "New UI",
-                )
-                versions.forEach { (ver, label) ->
-                    val isVerSelected = ver == version
-                    val chipShape = RoundedCornerShape(14.dp)
-                    LiquidGlassSurface(
-                        glassModifier = Modifier.liquidGlassChrome(chipShape, liquidGlass),
-                        onClick = {
-                            haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
-                            onSelectVersion(ver)
-                        },
-                        shape = chipShape,
-                        color = liquidGlassContainerColor(if (isVerSelected) {
+                items(LyricsAnimation.entries.toTypedArray(), key = { it.id }) { anim ->
+                    val isSelected = anim == current
+                    val cardShape = RoundedCornerShape(18.dp)
+
+                    Surface(
+                        shape = cardShape,
+                        color = liquidGlassContainerColor(if (isSelected) {
                             if (liquidGlass) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.92f)
-                            else MaterialTheme.colorScheme.primaryContainer
+                            else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.70f)
                         } else {
-                            if (liquidGlass) MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.60f)
-                            else MaterialTheme.colorScheme.surfaceContainerHigh
+                            if (liquidGlass) MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.90f)
+                            else MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.50f)
                         }),
                         modifier = Modifier
-                            .weight(1f)
-                            .clip(chipShape),
+                            .fillMaxWidth()
+                            .clip(cardShape)
+                            .liquidGlassChrome(cardShape, liquidGlass)
+                            .clickable {
+                                haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                                onSelect(anim)
+                            },
                     ) {
-                        Box(
-                            modifier = Modifier.padding(vertical = 10.dp),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = label,
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = if (isVerSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isVerSelected) {
-                                    MaterialTheme.colorScheme.onPrimaryContainer
-                                } else {
-                                    MaterialTheme.colorScheme.onSurfaceVariant
-                                },
-                            )
-                        }
-                    }
-                }
-            }
-
-            if (version == LyricsUiVersion.CLASSIC) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 440.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                ) {
-                    items(LyricsAnimation.entries.toTypedArray(), key = { it.id }) { anim ->
-                        val isSelected = anim == current
-                        val cardShape = RoundedCornerShape(18.dp)
-
-                        Surface(
-                            shape = cardShape,
-                            color = liquidGlassContainerColor(if (isSelected) {
-                                if (liquidGlass) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.92f)
-                                else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.70f)
-                            } else {
-                                if (liquidGlass) MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.90f)
-                                else MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.50f)
-                            }),
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(cardShape)
-                                .liquidGlassChrome(cardShape, liquidGlass)
-                                .clickable {
-                                    haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
-                                    onSelect(anim)
-                                },
+                                .padding(horizontal = 16.dp, vertical = 14.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(14.dp),
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 14.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(14.dp),
+                            Surface(
+                                shape = CircleShape,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.surfaceContainerLowest,
+                                modifier = Modifier.size(24.dp),
                             ) {
-                                Surface(
-                                    shape = CircleShape,
-                                    color = if (isSelected) MaterialTheme.colorScheme.primary
-                                    else MaterialTheme.colorScheme.surfaceContainerLowest,
-                                    modifier = Modifier.size(24.dp),
-                                ) {
-                                    if (isSelected) {
-                                        Box(contentAlignment = Alignment.Center) {
-                                            Icon(
-                                                imageVector = Icons.Filled.Check,
-                                                contentDescription = "Selected",
-                                                tint = MaterialTheme.colorScheme.onPrimary,
-                                                modifier = Modifier.size(16.dp),
-                                            )
-                                        }
+                                if (isSelected) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Check,
+                                            contentDescription = "Selected",
+                                            tint = MaterialTheme.colorScheme.onPrimary,
+                                            modifier = Modifier.size(16.dp),
+                                        )
                                     }
                                 }
+                            }
 
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = anim.title,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
-                                        color = if (isSelected && liquidGlass) MaterialTheme.colorScheme.onPrimaryContainer
-                                        else if (isSelected) MaterialTheme.colorScheme.primary
-                                        else MaterialTheme.colorScheme.onSurface,
-                                    )
-                                    Text(
-                                        text = anim.description,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = if (isSelected && liquidGlass) {
-                                            MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.78f)
-                                        } else {
-                                            MaterialTheme.colorScheme.onSurfaceVariant
-                                        },
-                                    )
-                                }
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = anim.title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
+                                    color = if (isSelected && liquidGlass) MaterialTheme.colorScheme.onPrimaryContainer
+                                    else if (isSelected) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.onSurface,
+                                )
+                                Text(
+                                    text = anim.description,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = if (isSelected && liquidGlass) {
+                                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.78f)
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    },
+                                )
                             }
                         }
-                    }
-                }
-            } else {
-                Surface(
-                    shape = RoundedCornerShape(18.dp),
-                    color = liquidGlassContainerColor(if (liquidGlass) MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.70f)
-                    else MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.40f)),
-                    modifier = Modifier.fillMaxWidth().liquidGlassChrome(RoundedCornerShape(18.dp), liquidGlass),
-                ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = "New Lyrics UI",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                        Text(
-                            text = "Modern lyrics rendering active",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center,
-                        )
                     }
                 }
             }
